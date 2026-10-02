@@ -1,0 +1,35 @@
+# One entry per package. The AI only uses facts written here -
+# it is told never to invent prices, hotels or inclusions.
+goa-express:
+  name: Goa Express
+  destination: Goa
+  duration: 3N/4D
+  price_from: null                  # EDIT: e.g. 12999 (per person). null = "DM for price"
+  price_note: per person, twin sharing
+  audience: [couples, friends, families]
+  highlights:
+    - North Goa beaches and Fort Aguada
+    - Old Goa churches heritage walk
+    - Sunset cruise on the Mandovi
+  inclusions:
+    - Hotel stay with breakfast
+    - Airport/station transfers
+    - Sightseeing by private cab
+  background: media/backgrounds/goa.jpg
+
+sikkim-darjeeling:
+  name: Darjeeling & Sikkim Escape
+  destination: Darjeeling and Sikkim
+  duration: 6N/7D
+  price_from: null                  # EDIT
+  price_note: per person, ex-Bagdogra
+  audience: [families, couples, friends]
+  highlights:
+    - Tiger Hill sunrise over Kanchenjunga
+    - Toy train joyride in Darjeeling
+    - Tsomgo Lake and MG Marg, Gangtok
+  inclusions:
+    - Hotels with breakfast
+    - Bagdogra pickup and drop
+    - All sightseeing by private cab
+  background: media/backgrounds/sikkim.jpg

@@ -1,0 +1,136 @@
+brand:
+  name: Pixlo Holidays
+  handle: "@pixloholidays"          # EDIT: your Instagram handle
+  whatsapp: "+91 70216 62074"
+  colors:
+    primary: "#0E7C86"
+    accent: "#FFB703"
+    dark: "#0B1F2A"
+    text: "#FFFFFF"
+  # Poppins (Google Fonts, OFL) ships in assets/fonts. If missing, falls back to Arial / DejaVu.
+  font_black: assets/fonts/Poppins-ExtraBold.ttf
+  font_bold: assets/fonts/Poppins-Bold.ttf
+  font_semibold: assets/fonts/Poppins-SemiBold.ttf
+  font_regular: assets/fonts/Poppins-Medium.ttf
+
+timezone: Asia/Kolkata
+
+# Kill switch: true stops both planning and publishing
+paused: false
+
+# Ramp-up: 3 posts/week for the first 2 weeks, then add tue + sat for 5/week
+schedule:
+  slots:
+    - { weekday: mon, time: "19:30" }
+    - { weekday: wed, time: "19:30" }
+    - { weekday: fri, time: "19:30" }
+
+copy:
+  model: opus                        # Claude Code model alias (your subscription)
+  fallback_model: sonnet             # used if opus is overloaded or unavailable
+  language: Hinglish                 # Roman-script Hindi + English, the way Indian travellers text
+  max_hashtags: 5                    # Instagram hard limit since Dec 2025
+  niche: "Smart travel for Indians: hidden places, real budgets, exact itineraries"
+  tone: >-
+    like a well-travelled friend sharing what they actually found, not an ad agency;
+    specific numbers and names over adjectives; confident, a little witty, never cringe
+
+# Content pillars, rotated by the planner (least-used in the last 30 posts first)
+pillars:
+  - name: hidden-gems
+    brief: "Lesser-known places, villages, viewpoints or stays near a well-known destination. The goal is a 'let's go here' send to a friend."
+  - name: budget-breakdown
+    brief: "A realistic trip cost broken down by travel, stay, food, local transport and entry fees, as ranges in INR. Gets saves and sends."
+  - name: exact-itinerary
+    brief: "A day-by-day or hour-by-hour plan in the order that saves time and money. Gets saves."
+  - name: where-to-go-this-month
+    brief: "Places that are at their best this month, grouped by vibe (snow, beaches, monsoon green, festivals). Timely and reshareable."
+  - name: mistakes-to-avoid
+    brief: "Common first-timer mistakes and what to do instead: scams, timings, permits, packing. Gets comments and sends."
+  - name: this-vs-that
+    brief: "An honest comparison of 2-3 similar destinations by budget, crowd, vibe and best for whom. Gets comments."
+
+# Destination pool; the planner shortlists the least recently used and research picks the best fit for the month
+destinations:
+  - Spiti Valley
+  - Manali
+  - Kasol and Parvati Valley
+  - Tirthan Valley
+  - Dharamshala and McLeodganj
+  - Rishikesh
+  - Auli
+  - Kashmir
+  - Ladakh
+  - Darjeeling
+  - Sikkim
+  - Meghalaya
+  - Arunachal Pradesh
+  - Udaipur
+  - Jaisalmer
+  - Jaipur
+  - Varanasi
+  - Goa
+  - Gokarna
+  - Hampi
+  - Coorg
+  - Munnar
+  - Varkala
+  - Alleppey
+  - Pondicherry
+  - Andaman Islands
+  - Ooty
+  - Kodaikanal
+  - Pachmarhi
+  - Bali
+  - Thailand
+  - Vietnam
+  - Sri Lanka
+  - Dubai
+  - Bhutan
+  - Nepal
+
+carousel:
+  width: 1080                        # 4:5 portrait, the largest feed footprint
+  height: 1350
+  min_slides: 6
+  max_slides: 9
+  currency_symbol: "₹"
+
+reels:
+  enabled: true                      # every carousel also becomes a Reel
+  offset_days: 1                     # Reel goes out the day after its carousel (Mon carousel -> Tue Reel)
+  time: "19:30"
+  kit_weekdays: []                   # days whose Reels are silent kits for Edits (none: every Reel auto-publishes)
+  max_shots: 8                       # cover + up to 6 info shots + CTA (~20 s)
+  music_dir: assets/music            # your own tracks + library.yaml (see assets/music/README.md); preferred
+  music_fallback: generate           # no matching track in your library -> original music composed for the post (synth.py)
+
+stock:
+  own_photos_dir: media/own          # media/own/<destination-slug>/*.jpg are used before any stock photo
+  providers: [unsplash, pexels]      # tried in this order
+  min_width: 1800                    # px; skip anything smaller
+
+quality:
+  min_hook_score: 8                  # 1-10, judged by the editor pass; the cover decides reach
+  max_rewrites: 3
+  polish: true                       # after a pass, one more rewrite for the editor's remaining notes (kept only if it still passes)
+  topic_memory: 30                   # don't repeat a topic/photo seen in the last N posts
+  banned_phrases:
+    - tag a friend
+    - tag your
+    - share if
+    - like if
+    - comment yes
+    - follow for more
+
+hosting:
+  provider: github_raw               # github_raw (public repo only) | s3
+  branch: main
+  s3:
+    bucket: pixlo-media
+    prefix: instagram/
+    public_base_url: https://media.example.com/instagram   # public URL that maps to bucket/prefix
+
+instagram:
+  graph_version: v22.0               # bump to the current Graph API version
+  max_attempts: 3

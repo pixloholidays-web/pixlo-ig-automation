@@ -1,0 +1,13 @@
+# Royalty-free tracks for auto-published Reels. See README.md in this folder.
+# The pipeline picks a track whose moods include the post's mood (calm, upbeat, romantic, adventure, epic),
+# least recently used first. Files listed here but missing on disk are ignored.
+tracks: []
+# Example entry:
+#  - file: assets/music/mountain-morning.mp3
+#    title: Mountain Morning
+#    artist: Some Artist
+#    source: Pixabay
+#    license: https://pixabay.com/service/license-summary/
+#    moods: [calm, adventure]
+#    bpm: 96        # optional: shots then cut on the beat
+#    start: 4       # optional: seconds to skip (e.g. a slow intro)
