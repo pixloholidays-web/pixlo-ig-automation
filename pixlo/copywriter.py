@@ -20,7 +20,12 @@ CAROUSEL RULES
   with concrete details (names, ₹ ranges, timings, distances). No fluff adjectives. Extra numbers go in the caption.
 - Every claim on slides and in the caption must come from the research facts or time-sensitive notes.
   Do not add facts of your own, and don't promise what the facts can't back (e.g. "exact timings" from old sources).
-- Order slides for retention: the slide right after the cover must pay off the cover's promise.
+- ORDER: when the post is a sequence (a day-by-day or hour-by-hour itinerary, steps, a route, a numbered
+  list), the slides MUST follow that sequence from start to finish: Night 0, Day 1, Day 2, Day 3. Never
+  pull a later day forward, not even to pay off the cover; the cover's promise is then paid off when its
+  day arrives, and the cover body can say which day that is. Practical extras that belong to no single day
+  (where to stay, total cost) go after the last day, just before the CTA.
+  Only when the post has no natural sequence: the slide right after the cover pays off the cover's promise.
 - CTA slide: title like "Save this for your trip"; body: one line on why to follow {handle}.
 - No emojis or hashtags on slides; they can't be rendered.
 - photo: index of the photo for that slide. Use the most striking photo on the cover. Match each info
@@ -35,6 +40,8 @@ CAROUSEL RULES
 
 REEL RULES (the same slides also become a ~20 s Reel, about 2.3 s per shot, mostly watched muted)
 - reel_text: the on-screen line for that shot, at most 7 words, readable in 2 seconds, standalone.
+  In an itinerary or numbered list, start it with the same label as the slide ("Day 2: ...", "3. ...") so a
+  viewer always knows where they are in the sequence.
   Cover: the hook itself (can equal the title if it's short). Info: the single most striking fact
   ("₹30 bus, 9 km uphill"). CTA: "Save this for your trip" or similar.
 - music_mood: the feel of the background track: calm, upbeat, romantic, adventure or epic.

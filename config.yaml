@@ -103,7 +103,7 @@ reels:
   offset_days: 1                     # Reel goes out the day after its carousel (Mon carousel -> Tue Reel)
   time: "19:30"
   kit_weekdays: []                   # days whose Reels are silent kits for Edits (none: every Reel auto-publishes)
-  max_shots: 8                       # cover + up to 6 info shots + CTA (~20 s)
+  max_shots: 9                       # cover + up to 7 info shots + CTA, so no slide is ever left out (~23 s with the map)
   music_dir: assets/music            # your own tracks + library.yaml (see assets/music/README.md); preferred
   music_fallback: generate           # no matching track in your library -> original music composed for the post (synth.py)
   instruments: sampled               # sampled = real instrument samples (MIT SoundFont); synth = built-in electronic tones

@@ -41,6 +41,28 @@ def strip_emoji(text: str) -> str:
     return EMOJI.sub("", text).strip()
 
 
+SEQUENCE = re.compile(r"^\s*(?:(day|night|step|stop)\s+(\d+)|(\d+)[.)](?=\s))", re.IGNORECASE)
+
+
+def order_problems(slides: list[dict]) -> list[str]:
+    """Slides labelled "Day 1", "Night 0", "Step 2" or "3." must appear in that order, and each Reel line
+    must carry the same label as its slide."""
+    errors, last = [], None
+    for i, s in enumerate(slides, 1):
+        m = SEQUENCE.match(s["title"])
+        if not m:
+            continue
+        n = int(m.group(2) or m.group(3))
+        if last is not None and n < last[0]:
+            errors.append(f"slide {i} ({s['title']!r}) comes after {last[1]!r}: put the slides in order "
+                          "from first to last")
+        last = (n, s["title"])
+        label = m.group(0).strip().rstrip(".)").lower()
+        if s.get("reel_text") and not s["reel_text"].strip().lower().startswith(label):
+            errors.append(f"slide {i}: reel_text must start with the slide's label ({m.group(0).strip()!r})")
+    return errors
+
+
 def rule_check(cfg: dict, copy: dict, photo_count: int) -> list[str]:
     """Deterministic checks. Returns a list of problems (empty = OK)."""
     errors = []
@@ -61,6 +83,7 @@ def rule_check(cfg: dict, copy: dict, photo_count: int) -> list[str]:
             errors.append(f"slide {i}: reel_text too long ({s['reel_text']!r}, max 7 words)")
         if len(s["body"].split()) > 35:
             errors.append(f"slide {i}: body too long ({len(s['body'].split())} words, max 25)")
+    errors += order_problems(slides)
     text = " ".join([copy["caption"]] + [s["title"] + " " + s["body"] for s in slides]).lower()
     for phrase in cfg["quality"]["banned_phrases"]:
         if phrase in text:

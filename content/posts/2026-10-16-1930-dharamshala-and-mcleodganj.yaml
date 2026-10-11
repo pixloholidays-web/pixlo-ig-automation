@@ -20,24 +20,45 @@ slides:
 - kind: cover
   photo: 7
   title: Triund turns day hikers back. Here's the fix.
-  body: McLeodganj + Triund in 3 days from Delhi
+  body: McLeodganj + Triund in 3 days from Delhi. The fix is on Day 2.
   text_position: bottom
   photo_shows: snow peak above forested slope, clear blue sky
   reel_text: Triund turns day hikers back
-- kind: info
-  photo: 0
-  title: 'Day 2: Triund before 11:30 AM'
-  body: Day hikers are turned back at Gallu Devi check-post after that. Only 400 get in daily. Start by 7–8 AM; the climb takes 4–5 hours.
-  text_position: top
-  photo_shows: grassy ridge facing a snow-streaked mountain in cloud
-  reel_text: Gate shuts 11:30 AM. 400 a day.
 - kind: info
   photo: 3
   title: 'Night 0: overnight bus from Delhi'
   body: Private buses leave Majnu Ka Tilla in the evening, cost ₹1,000–1,800 and reach McLeodganj around 7 AM. Day 1 stays fully usable.
   text_position: top
   photo_shows: sun rising over layered ridges and a fog-filled valley
-  reel_text: Night bus ₹1,000–1,800, arrive 7 AM
+  reel_text: 'Night 0: bus ₹1,000–1,800, arrive 7 AM'
+- kind: info
+  photo: 2
+  title: 'Day 1 morning: temple and kora'
+  body: 'Dalai Lama temple is free and open from about 5 AM. Add 30–40 minutes for the kora. Tibet Museum: closed Mondays, go before 4 PM.'
+  text_position: bottom
+  photo_shows: monk in maroon robes and face mask holding a metal bowl
+  reel_text: 'Day 1: Dalai Lama temple, free entry'
+- kind: info
+  photo: 5
+  title: 'Day 1 afternoon: walk to Bhagsu'
+  body: Bhagsu waterfall and Bhagsunag temple are 2 km from McLeodganj, free entry. Walk it in 20–25 minutes or take an auto for ₹80–90.
+  text_position: bottom
+  photo_shows: snowy mountain range seen through pine and deodar branches
+  reel_text: 'Day 1: Bhagsu waterfall, 20-minute walk'
+- kind: info
+  photo: 0
+  title: 'Day 2: Triund before 11:30 AM'
+  body: Day hikers are turned back at Gallu Devi check-post after that. Only 400 get in daily. Start by 7–8 AM; the climb takes 4–5 hours.
+  text_position: top
+  photo_shows: grassy ridge facing a snow-streaked mountain in cloud
+  reel_text: 'Day 2: Triund gate shuts 11:30 AM'
+- kind: info
+  photo: 8
+  title: 'Day 3: Naddi, then ropeway down'
+  body: 'Naddi viewpoint first, 3 km away. Skyway ropeway was suspended in Aug 2025 after a landslide, so confirm it runs. Shared ride down: about ₹25.'
+  text_position: top
+  photo_shows: red ropeway cabin, hillside buildings and ropeway station
+  reel_text: 'Day 3: ropeway closed? Shared ride ₹25'
 - kind: info
   photo: 6
   title: Where to sleep, two nights
@@ -45,27 +66,6 @@ slides:
   text_position: bottom
   photo_shows: snow-covered ridge behind a dark hillside with scattered houses
   reel_text: Dorm beds from ₹700 a night
-- kind: info
-  photo: 2
-  title: 'Day 1 morning: temple and kora'
-  body: 'Dalai Lama temple is free and open from about 5 AM. Add 30–40 minutes for the kora. Tibet Museum: closed Mondays, go before 4 PM.'
-  text_position: bottom
-  photo_shows: monk in maroon robes and face mask holding a metal bowl
-  reel_text: 'Dalai Lama temple: free entry'
-- kind: info
-  photo: 5
-  title: 'Day 1 afternoon: walk to Bhagsu'
-  body: Bhagsu waterfall and Bhagsunag temple are 2 km from McLeodganj, free entry. Walk it in 20–25 minutes or take an auto for ₹80–90.
-  text_position: bottom
-  photo_shows: snowy mountain range seen through pine and deodar branches
-  reel_text: 'Bhagsu waterfall: 20-minute walk, free'
-- kind: info
-  photo: 8
-  title: 'Day 3: Naddi, then ropeway down'
-  body: 'Naddi viewpoint first, 3 km away. Skyway ropeway was suspended in Aug 2025 after a landslide, so confirm it runs. Shared ride down: about ₹25.'
-  text_position: top
-  photo_shows: red ropeway cabin, hillside buildings and ropeway station
-  reel_text: Ropeway closed? Shared ride is ₹25
 - kind: info
   photo: 1
   title: About ₹4,300–8,100 per person
@@ -185,7 +185,7 @@ reel:
   video: media/posts/2026-10-16-1930-dharamshala-and-mcleodganj/reel.mp4
   cover: media/posts/2026-10-16-1930-dharamshala-and-mcleodganj/reel_cover.jpg
   mode: auto
-  duration: 20.6
+  duration: 22.9
   title_behind_subject: false
   route_map: true
   music:
