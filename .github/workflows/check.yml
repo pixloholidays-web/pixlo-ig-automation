@@ -33,4 +33,6 @@ jobs:
           IG_USER_ID: ${{ secrets.IG_USER_ID }}
           IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
           POST_ID: ${{ github.event.inputs.post }}
-        run: python cli.py test-upload "$POST_ID"
+        run: |
+          python cli.py media-pull
+          python cli.py test-upload "$POST_ID"

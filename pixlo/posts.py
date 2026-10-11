@@ -24,6 +24,7 @@ POSTS_DIR = ROOT / "content" / "posts"
 IG_CAPTION_LIMIT = 2200
 IG_HASHTAG_LIMIT = 5        # Instagram's cap since Dec 2025; extras are ignored
 IG_CAROUSEL_MAX = 10
+DONE = ("published", "skip")  # nothing left to publish
 
 
 def load_all() -> list[tuple[Path, dict]]:
@@ -93,9 +94,10 @@ def validate(post: dict) -> list[str]:
         errors.append("no images")
     if len(imgs) > IG_CAROUSEL_MAX:
         errors.append(f"more than {IG_CAROUSEL_MAX} carousel images")
-    for img in imgs:
-        if not (ROOT / img).exists():
-            errors.append(f"image not found: {img}")
+    if post.get("status") not in DONE:  # media of published posts is deleted (see mediastore.py)
+        for img in imgs:
+            if not (ROOT / img).exists():
+                errors.append(f"image not found: {img}")
     return errors
 
 
@@ -127,9 +129,10 @@ def validate_reel(post: dict) -> list[str]:
     for key in ("video", "cover", "scheduled_at", "status"):
         if not r.get(key):
             errors.append(f"reel missing '{key}'")
-    for key in ("video", "cover"):
-        if r.get(key) and not (ROOT / r[key]).exists():
-            errors.append(f"reel {key} not found: {r[key]}")
+    if r.get("status") not in DONE:
+        for key in ("video", "cover"):
+            if r.get(key) and not (ROOT / r[key]).exists():
+                errors.append(f"reel {key} not found: {r[key]}")
     if r.get("duration", 0) > REEL_MAX_SECONDS:
         errors.append(f"reel longer than {REEL_MAX_SECONDS}s")
     if post.get("caption") and len(reel_caption(post)) > IG_CAPTION_LIMIT:

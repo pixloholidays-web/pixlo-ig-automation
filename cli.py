@@ -8,6 +8,8 @@
   python cli.py rerender <id>           # redraw slides after editing a post's YAML
   python cli.py publish [--dry-run]     # publish posts that are due
   python cli.py whoami                  # find your IG user id / check the token
+  python cli.py media-pull              # download unpublished slides/Reels from the media branch
+  python cli.py media-sync              # upload new slides/Reels there, delete the published ones
   python cli.py test-upload <id>        # rehearse the upload to Instagram, without publishing
   python cli.py refresh-token --out f   # extend an Instagram Login token (used by the refresh workflow)
 Add --offline to generate/plan to test without any API calls.
@@ -238,6 +240,16 @@ def cmd_test_upload(args, cfg):
     return 1 if failures else 0
 
 
+def cmd_media_pull(args, cfg):
+    from pixlo import mediastore
+    print(f"{mediastore.pull(cfg)} post folder(s) in media/posts/")
+
+
+def cmd_media_sync(args, cfg):
+    from pixlo import mediastore
+    print(mediastore.sync(cfg))
+
+
 def cmd_whoami(args, cfg):
     from pixlo.instagram import InstagramClient
     token = env("IG_ACCESS_TOKEN", required=True)
@@ -301,6 +313,9 @@ def main():
 
     sub.add_parser("whoami", help="list linked IG accounts and check the token")
 
+    sub.add_parser("media-pull", help="download unpublished slides/Reels from the media branch")
+    sub.add_parser("media-sync", help="upload new slides/Reels to the media branch, delete published ones")
+
     tu = sub.add_parser("test-upload", help="rehearse a post's upload to Instagram without publishing")
     tu.add_argument("post", help="post id")
 
@@ -312,7 +327,8 @@ def main():
     handler = {"generate": cmd_generate, "plan": cmd_plan, "validate": cmd_validate,
                "preview": cmd_preview, "rerender": cmd_rerender, "reel": cmd_reel,
                "publish": cmd_publish, "whoami": cmd_whoami,
-               "refresh-token": cmd_refresh_token, "test-upload": cmd_test_upload}[args.cmd]
+               "refresh-token": cmd_refresh_token, "test-upload": cmd_test_upload,
+               "media-pull": cmd_media_pull, "media-sync": cmd_media_sync}[args.cmd]
     sys.exit(handler(args, cfg) or 0)
 
 

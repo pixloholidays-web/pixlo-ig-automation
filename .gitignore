@@ -3,3 +3,6 @@ __pycache__/
 .venv/
 media/cache/
 preview/
+# Rendered slides and Reels live on the media branch (python cli.py media-sync), not on main
+media/posts/*
+!media/posts/.gitkeep

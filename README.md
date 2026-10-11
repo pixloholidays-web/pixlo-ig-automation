@@ -37,7 +37,7 @@ Every carousel also becomes a ~20 s Reel (1080×1920), posted on a non-carousel 
 | `pixlo/carousel.py` | Slide renderer (`classic`, `panel`, `bold` styles) |
 | `content/posts/*.yaml` | One file per post: `scheduled` → `published` / `failed`. Set `status: skip` to cancel one |
 | `media/own/<destination-slug>/` | **Your own photos** (e.g. `media/own/spiti-valley/`). Always used before stock photos |
-| `media/posts/<id>/` | Rendered slides |
+| `media/posts/<id>/` | Rendered slides and Reel. Not on `main`: kept on the `media` branch until the post is published, then deleted. `python cli.py media-pull` downloads them, `media-sync` uploads new ones |
 
 ## Accounts and keys
 | Secret | Where to get it |

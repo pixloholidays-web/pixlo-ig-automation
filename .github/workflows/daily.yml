@@ -1,4 +1,5 @@
-# Daily: research + render carousels for the next 2 days' slots and commit them straight to main.
+# Daily: research + render carousels for the next 2 days' slots. Post text is committed straight to main;
+# slides and Reels go to the media branch until they are published.
 # No PR approval step: quality gates (pixlo/quality.py) decide. Set `paused: true` in config.yaml to stop.
 name: Generate posts
 
@@ -14,8 +15,8 @@ on:
 permissions:
   contents: write
 
-concurrency:
-  group: content-repo-writes
+concurrency:                     # one job at a time may change the repo or the media branch
+  group: repo-writes
   cancel-in-progress: false
 
 jobs:
@@ -34,6 +35,9 @@ jobs:
         with:
           path: ~/.cache/huggingface
           key: hf-depth-anything-v2-small
+
+      - name: Fetch unpublished media
+        run: python cli.py media-pull
 
       - name: Install Claude Code
         run: |
@@ -57,9 +61,13 @@ jobs:
         run: |
           git config user.name "pixlo-bot"
           git config user.email "pixlo-bot@users.noreply.github.com"
-          git add content/posts media/posts assets/music/library.yaml
+          git add content/posts assets/music/library.yaml
           if ! git diff --cached --quiet; then
             git commit -m "content: new carousels [skip ci]"
             git pull --rebase
             git push
           fi
+
+      - name: Upload new slides and Reels to the media branch
+        if: always()
+        run: python cli.py media-sync

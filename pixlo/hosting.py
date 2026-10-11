@@ -6,21 +6,19 @@ import requests
 
 from .config import ROOT, env
 
-JSDELIVR_MAX_BYTES = 20 * 1024 * 1024
-
 
 def public_url(cfg: dict, local_path: Path) -> str:
     hosting = cfg["hosting"]
     rel = local_path.resolve().relative_to(ROOT).as_posix()
 
     if hosting["provider"] == "github_raw":
+        from . import mediastore
         repo = env("GITHUB_REPOSITORY", required=True)  # set automatically in Actions
-        url = f"https://raw.githubusercontent.com/{repo}/{hosting.get('branch', 'main')}/{rel}"
-        # raw.githubusercontent.com serves videos as application/octet-stream, which Instagram can reject.
-        # jsDelivr mirrors public repos with the right video/mp4 type (files up to 20 MB), pinned to the commit.
-        if local_path.suffix.lower() == ".mp4" and local_path.stat().st_size <= JSDELIVR_MAX_BYTES:
-            ref = env("GITHUB_SHA") or hosting.get("branch", "main")
-            url = f"https://cdn.jsdelivr.net/gh/{repo}@{ref}/{rel}"
+        # Slides and Reels live on the media branch; the commit id (not the branch name) avoids stale caches
+        ref = mediastore.remote_sha(mediastore.branch(cfg))
+        if not ref:
+            raise RuntimeError("the media branch doesn't exist yet: run `python cli.py media-sync`")
+        url = f"https://raw.githubusercontent.com/{repo}/{ref}/{rel}"
 
     elif hosting["provider"] == "s3":
         import boto3
