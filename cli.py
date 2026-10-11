@@ -229,7 +229,11 @@ def cmd_test_upload(args, cfg):
         raise SystemExit(f"No post with id {args.post}")
     client = ig_client(cfg)
     failures = 0
-    for kind in ["carousel"] + (["reel"] if post.get("reel") else []):
+    reel = post.get("reel") or {}
+    kinds = ([] if post.get("status") in posts.DONE else ["carousel"]) +             (["reel"] if reel and reel.get("status") not in posts.DONE else [])
+    if not kinds:
+        print("Nothing left to publish for this post.")
+    for kind in kinds:
         try:
             container = _create_container(client, cfg, post, kind)
             client.wait_until_ready(container, timeout=600 if kind == "reel" else 180)
