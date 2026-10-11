@@ -1,5 +1,7 @@
 # Weekly: extend the Instagram Login token (valid 60 days) and store it back in the repo secret.
-# Needs the secret GH_SECRETS_TOKEN: a fine-grained GitHub token for this repo with "Secrets: Read and write".
+# Instagram normally keeps the same token and just moves its expiry, so no extra setup is needed.
+# Only if it ever issues a different token does this need the secret GH_SECRETS_TOKEN
+# (a fine-grained GitHub token for this repo with "Secrets: Read and write") to save it.
 # Not needed for Facebook system-user tokens (EAA...), which never expire.
 name: Refresh Instagram token
 
@@ -27,8 +29,13 @@ jobs:
           IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
           GH_TOKEN: ${{ secrets.GH_SECRETS_TOKEN }}
         run: |
-          if [ -z "$GH_TOKEN" ]; then echo "::error::Secret GH_SECRETS_TOKEN is missing"; exit 1; fi
           python cli.py refresh-token --out "$RUNNER_TEMP/ig_token"
+          # Usually the token stays the same and only its expiry moves, so there is nothing to store
+          if [ ! -f "$RUNNER_TEMP/ig_token" ]; then exit 0; fi
+          if [ -z "$GH_TOKEN" ]; then
+            echo "::error::Instagram issued a new token but the GH_SECRETS_TOKEN secret is missing, so it could not be saved"
+            exit 1
+          fi
           # The new token goes straight from the file into the secret; it is never printed
           gh secret set IG_ACCESS_TOKEN -R "$GITHUB_REPOSITORY" < "$RUNNER_TEMP/ig_token"
           rm -f "$RUNNER_TEMP/ig_token"

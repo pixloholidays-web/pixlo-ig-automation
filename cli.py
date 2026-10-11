@@ -253,11 +253,16 @@ def cmd_whoami(args, cfg):
 
 
 def cmd_refresh_token(args, cfg):
-    """Extend the Instagram Login token and write it to a file (never printed), for the refresh workflow."""
-    token, expires_in = ig_client(cfg).refresh_token()
-    with open(args.out, "w", encoding="utf-8") as f:
-        f.write(token)
+    """Extend the Instagram Login token by 60 days. Instagram normally keeps the same token and only moves
+    its expiry, so nothing has to be stored. If it ever issues a different one, that is written to --out
+    (never printed) for the workflow to save as the new secret."""
+    client = ig_client(cfg)
+    token, expires_in = client.refresh_token()
     print(f"Token refreshed, valid for {expires_in // 86400} more days.")
+    if token != client.token:
+        with open(args.out, "w", encoding="utf-8") as f:
+            f.write(token)
+        print("Instagram issued a new token: the IG_ACCESS_TOKEN secret must be updated.")
 
 
 # ------------------------------------------------------------------- main
