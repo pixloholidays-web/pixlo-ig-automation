@@ -4,7 +4,7 @@ pillar: budget-breakdown
 destination: Rishikesh
 topic: 'Rishikesh 2N/3D from Delhi for about ₹4,000–7,500 per person in October 2026, with 16 km Shivpuri rafting included. Full split: bus/train, hostel, food, autos and every entry fee. Bungee is an optional extra of ₹3,550–4,500.'
 scheduled_at: '2026-10-11T15:20:00+05:30'
-status: scheduled
+status: published
 style: bold
 images:
 - media/posts/2026-10-05-1930-rishikesh/01.jpg
@@ -173,3 +173,7 @@ reel:
     mood: adventure
   scheduled_at: '2026-10-13T19:30:00+05:30'
   status: scheduled
+container_id: '18163481329506600'
+media_id: '18099414179424255'
+published_at: '2026-10-11T15:21:16.836316+05:30'
+permalink: https://www.instagram.com/p/DeWYLY8lTsv/
