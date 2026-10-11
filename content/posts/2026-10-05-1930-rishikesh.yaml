@@ -172,7 +172,11 @@ reel:
     start: 0.0
     mood: adventure
   scheduled_at: '2026-10-11T15:23:00+05:30'
-  status: scheduled
+  status: published
+  container_id: '18163481761506600'
+  media_id: '18125927575896608'
+  published_at: '2026-10-11T15:25:00.092226+05:30'
+  permalink: https://www.instagram.com/reel/DeWYj1PE6VQ/
 container_id: '18163481329506600'
 media_id: '18099414179424255'
 published_at: '2026-10-11T15:21:16.836316+05:30'
