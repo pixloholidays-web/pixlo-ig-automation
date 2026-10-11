@@ -124,7 +124,7 @@ quality:
     - follow for more
 
 hosting:
-  provider: github_raw               # github_raw (public repo only) | s3
+  provider: github_raw               # github_raw (public repo only; Reels go via the jsDelivr mirror) | s3
   branch: main
   s3:
     bucket: pixlo-media

@@ -8,6 +8,7 @@
   python cli.py rerender <id>           # redraw slides after editing a post's YAML
   python cli.py publish [--dry-run]     # publish posts that are due
   python cli.py whoami                  # find your IG user id / check the token
+  python cli.py refresh-token --out f   # extend an Instagram Login token (used by the refresh workflow)
 Add --offline to generate/plan to test without any API calls.
 """
 import argparse
@@ -121,9 +122,10 @@ def cmd_validate(args, cfg):
 # ----------------------------------------------------------------- publish
 def ig_client(cfg):
     from pixlo.instagram import InstagramClient
-    return InstagramClient(env("IG_USER_ID", required=True),
-                           env("IG_ACCESS_TOKEN", required=True),
-                           cfg["instagram"]["graph_version"])
+    token = env("IG_ACCESS_TOKEN", required=True)
+    # Instagram Login tokens ("IG...") identify the account themselves; Facebook ones need IG_USER_ID
+    user_id = "" if token.startswith("IG") else env("IG_USER_ID", required=True)
+    return InstagramClient(user_id, token, cfg["instagram"]["graph_version"])
 
 
 def _create_container(client, cfg, post, kind) -> str:
@@ -219,12 +221,22 @@ def cmd_whoami(args, cfg):
     from pixlo.instagram import InstagramClient
     token = env("IG_ACCESS_TOKEN", required=True)
     client = InstagramClient(env("IG_USER_ID") or "", token, cfg["instagram"]["graph_version"])
-    for page in client.linked_accounts():
-        ig = page.get("instagram_business_account")
-        print(f"Page: {page['name']:<30} IG: {ig['username'] + ' (IG_USER_ID=' + ig['id'] + ')' if ig else 'not linked'}")
+    if not client.instagram_login:
+        for page in client.linked_accounts():
+            ig = page.get("instagram_business_account")
+            print(f"Page: {page['name']:<30} IG: {ig['username'] + ' (IG_USER_ID=' + ig['id'] + ')' if ig else 'not linked'}")
     if client.ig_user_id:
+        print("Login type:", "Instagram Login" if client.instagram_login else "Facebook Login")
         print("Account:", client.account())
         print("Publishing quota:", client.publishing_limit())
+
+
+def cmd_refresh_token(args, cfg):
+    """Extend the Instagram Login token and write it to a file (never printed), for the refresh workflow."""
+    token, expires_in = ig_client(cfg).refresh_token()
+    with open(args.out, "w", encoding="utf-8") as f:
+        f.write(token)
+    print(f"Token refreshed, valid for {expires_in // 86400} more days.")
 
 
 # ------------------------------------------------------------------- main
@@ -263,11 +275,15 @@ def main():
 
     sub.add_parser("whoami", help="list linked IG accounts and check the token")
 
+    rt = sub.add_parser("refresh-token", help="extend an Instagram Login token by 60 days")
+    rt.add_argument("--out", required=True, help="file to write the new token to")
+
     args = parser.parse_args()
     cfg = load_config()
     handler = {"generate": cmd_generate, "plan": cmd_plan, "validate": cmd_validate,
                "preview": cmd_preview, "rerender": cmd_rerender, "reel": cmd_reel,
-               "publish": cmd_publish, "whoami": cmd_whoami}[args.cmd]
+               "publish": cmd_publish, "whoami": cmd_whoami,
+               "refresh-token": cmd_refresh_token}[args.cmd]
     sys.exit(handler(args, cfg) or 0)
 
 

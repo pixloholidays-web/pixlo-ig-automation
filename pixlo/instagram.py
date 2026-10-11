@@ -9,16 +9,27 @@ class GraphError(RuntimeError):
 
 
 class InstagramClient:
-    def __init__(self, ig_user_id: str, access_token: str, version: str = "v22.0"):
-        self.ig_user_id = ig_user_id
-        self.token = access_token
-        self.base = f"https://graph.facebook.com/{version}"
+    """Works with both token types:
+    - Instagram Login tokens (start with "IG"): graph.instagram.com, the account is always "me".
+    - Facebook Login / system-user tokens (start with "EAA"): graph.facebook.com + IG_USER_ID.
+    """
 
-    def _call(self, method: str, path: str, **params) -> dict:
-        params["access_token"] = self.token
+    def __init__(self, ig_user_id: str, access_token: str, version: str = "v22.0"):
+        self.token = access_token
+        self.instagram_login = access_token.startswith("IG")
+        self.host = "https://graph.instagram.com" if self.instagram_login else "https://graph.facebook.com"
+        self.base = f"{self.host}/{version}"
+        self.ig_user_id = "me" if self.instagram_login else ig_user_id
+
+    def _call(self, method: str, path: str, base: str | None = None, **params) -> dict:
+        # The token goes in a header, never in the URL, so it can't leak through error messages or logs
+        headers = {"Authorization": f"Bearer {self.token}"}
         kwargs = {"params": params} if method == "GET" else {"data": params}
-        resp = requests.request(method, f"{self.base}/{path}", timeout=60, **kwargs)
-        body = resp.json()
+        try:
+            resp = requests.request(method, f"{base or self.base}/{path}", headers=headers, timeout=60, **kwargs)
+            body = resp.json()
+        except (requests.RequestException, ValueError) as exc:
+            raise GraphError(f"request to {path} failed: {type(exc).__name__}") from None
         if resp.status_code >= 400 or "error" in body:
             err = body.get("error", {})
             raise GraphError(f"{err.get('type')} {err.get('code')}: {err.get('message')}")
@@ -26,7 +37,7 @@ class InstagramClient:
 
     # --- setup helpers -------------------------------------------------
     def linked_accounts(self) -> list[dict]:
-        """Facebook Pages visible to the token, with their linked IG business account."""
+        """Facebook Pages visible to the token, with their linked IG business account (Facebook Login only)."""
         data = self._call("GET", "me/accounts",
                           fields="name,instagram_business_account{id,username}")
         return data.get("data", [])
@@ -37,6 +48,14 @@ class InstagramClient:
     def publishing_limit(self) -> dict:
         return self._call("GET", f"{self.ig_user_id}/content_publishing_limit",
                           fields="quota_usage,config")
+
+    def refresh_token(self) -> tuple[str, int]:
+        """Extend an Instagram Login token by another 60 days. Returns (token, seconds until expiry)."""
+        if not self.instagram_login:
+            raise GraphError("only Instagram Login tokens need refreshing")
+        body = self._call("GET", "refresh_access_token", base=self.host, grant_type="ig_refresh_token",
+                          access_token=self.token)
+        return body["access_token"], int(body.get("expires_in", 0))
 
     # --- publishing ----------------------------------------------------
     def create_image_container(self, image_url: str, caption: str) -> str:
