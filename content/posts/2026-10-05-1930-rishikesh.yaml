@@ -171,7 +171,7 @@ reel:
     bpm: 102.0
     start: 0.0
     mood: adventure
-  scheduled_at: '2026-10-13T19:30:00+05:30'
+  scheduled_at: '2026-10-11T15:23:00+05:30'
   status: scheduled
 container_id: '18163481329506600'
 media_id: '18099414179424255'
