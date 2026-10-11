@@ -8,6 +8,7 @@
   python cli.py rerender <id>           # redraw slides after editing a post's YAML
   python cli.py publish [--dry-run]     # publish posts that are due
   python cli.py whoami                  # find your IG user id / check the token
+  python cli.py test-upload <id>        # rehearse the upload to Instagram, without publishing
   python cli.py refresh-token --out f   # extend an Instagram Login token (used by the refresh workflow)
 Add --offline to generate/plan to test without any API calls.
 """
@@ -217,6 +218,26 @@ def cmd_publish(args, cfg):
     return 1 if failures else 0
 
 
+def cmd_test_upload(args, cfg):
+    """Rehearsal: make Instagram fetch and process a post's images and Reel, but never publish them.
+    Unpublished containers are discarded by Instagram after 24 hours; nothing is saved to the post file."""
+    from pixlo.instagram import GraphError
+    post = next((p for _, p in posts.load_all() if p["id"] == args.post), None)
+    if post is None:
+        raise SystemExit(f"No post with id {args.post}")
+    client = ig_client(cfg)
+    failures = 0
+    for kind in ["carousel"] + (["reel"] if post.get("reel") else []):
+        try:
+            container = _create_container(client, cfg, post, kind)
+            client.wait_until_ready(container, timeout=600 if kind == "reel" else 180)
+            print(f"✓ {kind}: Instagram accepted the files (container {container}, not published)")
+        except (GraphError, RuntimeError, OSError) as exc:
+            print(f"✗ {kind}: {exc}")
+            failures += 1
+    return 1 if failures else 0
+
+
 def cmd_whoami(args, cfg):
     from pixlo.instagram import InstagramClient
     token = env("IG_ACCESS_TOKEN", required=True)
@@ -275,6 +296,9 @@ def main():
 
     sub.add_parser("whoami", help="list linked IG accounts and check the token")
 
+    tu = sub.add_parser("test-upload", help="rehearse a post's upload to Instagram without publishing")
+    tu.add_argument("post", help="post id")
+
     rt = sub.add_parser("refresh-token", help="extend an Instagram Login token by 60 days")
     rt.add_argument("--out", required=True, help="file to write the new token to")
 
@@ -283,7 +307,7 @@ def main():
     handler = {"generate": cmd_generate, "plan": cmd_plan, "validate": cmd_validate,
                "preview": cmd_preview, "rerender": cmd_rerender, "reel": cmd_reel,
                "publish": cmd_publish, "whoami": cmd_whoami,
-               "refresh-token": cmd_refresh_token}[args.cmd]
+               "refresh-token": cmd_refresh_token, "test-upload": cmd_test_upload}[args.cmd]
     sys.exit(handler(args, cfg) or 0)
 
 

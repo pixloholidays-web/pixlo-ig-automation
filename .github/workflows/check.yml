@@ -1,8 +1,13 @@
 # Manual: confirm the Instagram token works (prints the account name and publishing quota, never the token).
+# Give a post id to also rehearse its upload: Instagram fetches and processes the files, nothing is published.
 name: Check Instagram connection
 
 on:
   workflow_dispatch:
+    inputs:
+      post:
+        description: "Post id to rehearse uploading (nothing is published). Empty = only check the token"
+        default: ""
 
 permissions:
   contents: read
@@ -22,3 +27,10 @@ jobs:
           IG_USER_ID: ${{ secrets.IG_USER_ID }}
           IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
         run: python cli.py whoami
+      - name: Rehearse upload (no publish)
+        if: github.event.inputs.post != ''
+        env:
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          POST_ID: ${{ github.event.inputs.post }}
+        run: python cli.py test-upload "$POST_ID"
