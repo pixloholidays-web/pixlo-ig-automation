@@ -1,4 +1,4 @@
-# Daily: research + render carousels for the next 2 days' slots. Post text is committed straight to main;
+# Daily: research and build posts (Reels; carousels too if carousel.publish is true) for the next 2 days' slots. Post text is committed straight to main;
 # slides and Reels go to the media branch until they are published.
 # No PR approval step: quality gates (pixlo/quality.py) decide. Set `paused: true` in config.yaml to stop.
 name: Generate posts
@@ -63,7 +63,7 @@ jobs:
           git config user.email "pixlo-bot@users.noreply.github.com"
           git add content/posts assets/music/library.yaml
           if ! git diff --cached --quiet; then
-            git commit -m "content: new carousels [skip ci]"
+            git commit -m "content: new posts [skip ci]"
             git pull --rebase
             git push
           fi

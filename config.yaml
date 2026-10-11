@@ -90,6 +90,7 @@ destinations:
   - Nepal
 
 carousel:
+  publish: false                     # false = Reels only: slides are still written (they script the Reel) but no image post goes out
   width: 1080                        # 4:5 portrait, the largest feed footprint
   height: 1350
   min_slides: 6
@@ -97,7 +98,8 @@ carousel:
   currency_symbol: "₹"
 
 reels:
-  enabled: true                      # every carousel also becomes a Reel
+  enabled: true                      # every post becomes a Reel
+  # With carousel.publish: false the Reel goes out at the schedule slot itself and the next two lines are ignored
   offset_days: 1                     # Reel goes out the day after its carousel (Mon carousel -> Tue Reel)
   time: "19:30"
   kit_weekdays: []                   # days whose Reels are silent kits for Edits (none: every Reel auto-publishes)

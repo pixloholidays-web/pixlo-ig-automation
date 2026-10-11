@@ -1,6 +1,8 @@
 # Pixlo: Instagram travel page automation
 
-General travel content in Hinglish, built to earn **sends and saves** (the signals Instagram uses to reach non-followers). Carousels are researched, written, checked and published automatically. Every post also becomes a Reel with 2.5D camera motion and original music, published automatically.
+General travel content in Hinglish, built to earn **sends and saves** (the signals Instagram uses to reach non-followers). Each post is researched, written, checked, turned into a Reel with 2.5D camera motion and original music, and published automatically.
+
+**Currently Reels only:** no image posts go out (`carousel.publish: false` in `config.yaml`). Set it to `true` to also publish each post as a carousel, with its Reel a day later.
 
 Everything runs on GitHub Actions. Nothing needs to stay switched on at home.
 
@@ -24,8 +26,8 @@ Daily 06:00 IST   "Generate posts"
                   ─► photos: media/own ▸ Unsplash ▸ Pexels (never reused, photographers credited)
                   ─► Claude looks at the photos and writes slides + caption + 5 hashtags
                   ─► quality check (rules + AI editor; up to 3 rewrites, else the slot is skipped)
-                  ─► render 1080×1350 slides and a ~20 s Reel
-                  ─► post text ─► main branch      slides + Reel ─► media branch
+                  ─► build a ~20 s Reel from the slides' text and photos
+                  ─► post text ─► main branch      Reel ─► media branch
 
 18:30–21:00 IST   "Publish due posts" (every 30 min)
                   ─► posts whose time has come ─► Instagram fetches the files from the media branch
@@ -35,7 +37,7 @@ Daily 06:00 IST   "Generate posts"
 ### The four workflows
 | Workflow (Actions tab) | When | What it does |
 |---|---|---|
-| **Generate posts** | Daily, 06:00 IST | Creates carousels and Reels for the slots in the next 2 days |
+| **Generate posts** | Daily, 06:00 IST | Creates a Reel for each slot in the next 2 days |
 | **Publish due posts** | Every 30 min, 18:30–21:00 IST | Publishes anything that is due, then deletes media that is no longer needed |
 | **Refresh Instagram token** | Mondays, 08:30 IST | Extends the Instagram token by 60 days and saves it as the secret |
 | **Check Instagram connection** | Manual only | Confirms the token works. Give it a post id to rehearse that post's upload without publishing |
@@ -43,14 +45,14 @@ Daily 06:00 IST   "Generate posts"
 GitHub often starts scheduled runs late, so a 19:30 post may go out some time after 19:30.
 
 ### Reels
-Every carousel also becomes a ~20 s Reel (1080×1920), posted the next day that isn't a carousel day:
+Every post becomes a ~20 s Reel (1080×1920), published at its schedule slot. The slides Claude writes are the Reel's script: one shot per slide.
 - **2.5D parallax:** Depth Anything V2 (ONNX, CPU) splits each photo into depth layers and a virtual camera pushes in, pans or rises, so stills feel like drone or dolly shots. Free, no GPU, about 2 minutes per Reel.
 - **Text:** short animated text per shot (`reel_text`), the hook fully visible on frame 1, a save/follow end card.
 - **Music is original, with no copyright risk.** Every Reel gets its own track composed by `pixlo/synth.py` in the post's mood (calm, romantic, adventure, upbeat, epic), at a tempo the video cuts follow. No samples or third-party audio are used. Audio is normalised to about −14 LUFS. Tracks you own can go in `assets/music/` (see its README); they're used first when one matches the mood.
 
 ### Where the files live
 - **`main` branch:** code, settings and one YAML file per post (`content/posts/`).
-- **`media` branch:** slides and Reels of posts that still have something to publish. It is always a single commit with no history. Once a post's carousel and Reel are both published, its files are deleted from the branch. Instagram keeps its own copy.
+- **`media` branch:** the Reel videos and covers (and slides, when carousels are on) that are still waiting to be published. It is always a single commit with no history. Each file is deleted from the branch once it has been published. Instagram keeps its own copy.
 - Failed posts keep their media, so they can be retried.
 
 ## First-time setup
@@ -122,12 +124,12 @@ Each post is one file in `content/posts/`. You can edit these files directly on 
 
 | I want to… | Do this |
 |---|---|
-| See what's queued | Open `content/posts/`. `status: scheduled` posts are waiting; `scheduled_at` is the time |
-| See what was posted | Published posts have `status: published` and a `permalink` to Instagram |
-| Cancel a post | Set `status: skip` at the top level. To cancel only its Reel, set `status: skip` under `reel:` |
+| See what's queued | Open `content/posts/`. Look under `reel:` in each file: `status: scheduled` is waiting; `scheduled_at` is the time |
+| See what was posted | Published Reels have `status: published` and a `permalink` to Instagram under `reel:` |
+| Cancel a post | Set `status: skip` under `reel:`. (The top-level `status` belongs to the image post, which is already `skip` in Reels-only mode) |
 | Change a caption or hashtags | Edit `caption` or `hashtags` in the YAML before it publishes |
-| Move a post | Change `scheduled_at` (and the one under `reel:`). Keep the `+05:30` at the end |
-| Retry a failed post | Set `status: scheduled` again and delete the `attempts` and `last_error` lines |
+| Move a post | Change `scheduled_at` under `reel:`. Keep the `+05:30` at the end |
+| Retry a failed post | Under `reel:`, set `status: scheduled` again and delete the `attempts` and `last_error` lines |
 | Stop everything | Set `paused: true` in `config.yaml`. This stops both generating and publishing |
 | Post more often | Add slots under `schedule.slots` in `config.yaml` |
 | Change the posting time | Change the slot times in `config.yaml` **and** the hours in `.github/workflows/publish.yml`. Its cron line is in UTC (IST minus 5:30) |
@@ -150,7 +152,7 @@ Claude: if `claude` works in your terminal, the pipeline uses that login and no 
 
 | Command | What it does |
 |---|---|
-| `python cli.py generate --at "2026-10-16 19:30"` | Create one carousel + Reel. Add `--pillar` and `--destination` to choose the topic |
+| `python cli.py generate --at "2026-10-16 19:30"` | Create one post (Reel). Add `--pillar` and `--destination` to choose the topic |
 | `python cli.py generate --at "..." --offline` | Test the pipeline with placeholder content and no API calls |
 | `python cli.py plan --days 7` | Fill the free slots in the next 7 days |
 | `python cli.py preview [id]` | Instagram-style preview in your browser |
@@ -178,11 +180,11 @@ All in `config.yaml`:
 |---|---|
 | `brand` | Name, handle, colours, fonts |
 | `paused` | Kill switch |
-| `schedule.slots` | Carousel days and times |
+| `schedule.slots` | Posting days and times |
 | `copy` | Claude model, language, niche, tone |
 | `pillars` | Content themes the planner rotates through |
 | `destinations` | Places the planner picks from |
-| `carousel` | Slide size and number of slides |
+| `carousel` | `publish` (false = Reels only), slide size and number of slides |
 | `reels` | On/off, how many days after the carousel, time, number of shots, music |
 | `stock` | Photo sources and minimum photo width |
 | `quality` | Minimum hook score, number of rewrites, banned phrases |

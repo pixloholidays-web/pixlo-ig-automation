@@ -105,10 +105,13 @@ REEL_MAX_SECONDS = 90  # Graph API limit for Reels
 
 
 def reel_caption(post: dict) -> str:
-    """Reel caption: the carousel caption + a pointer to the carousel, music credit, photo credits, hashtags."""
+    """Reel caption: the post's caption (+ a pointer to the carousel when one is published), music credit,
+    photo credits, hashtags."""
     lines = post["caption"].strip().split("\n")
     pointer = "Pura breakdown (costs ke saath) humare carousel mein, profile pe 📌"
-    if lines and "DM" in lines[-1]:  # keep the DM line last
+    if post.get("status") == "skip":  # Reels only: there is no carousel to point to
+        body = "\n".join(lines)
+    elif lines and "DM" in lines[-1]:  # keep the DM line last
         body = "\n".join(lines[:-1]).rstrip() + f"\n{pointer}\n\n{lines[-1]}"
     else:
         body = "\n".join(lines) + f"\n\n{pointer}"

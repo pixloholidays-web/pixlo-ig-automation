@@ -76,7 +76,8 @@ def make_carousel(cfg: dict, when: datetime, offline: bool = False, pillar_name:
         "destination": facts["destination"],
         "topic": facts["topic"],
         "scheduled_at": when.isoformat(),
-        "status": "scheduled",
+        # Reels-only mode: the slides only script the Reel, so the image post itself is never published
+        "status": "scheduled" if carousels_published(cfg) else "skip",
         "style": style,
         "images": [p.relative_to(ROOT).as_posix() for p in images],
         "slides": slides,
@@ -99,6 +100,8 @@ def make_carousel(cfg: dict, when: datetime, offline: bool = False, pillar_name:
             print(f"    + reel {r['duration']}s, {r['mode']}, {posts.scheduled_at(r):%a %d %b %H:%M}"
                   f"{', music: ' + r['music']['title'] if r.get('music') else ', no music'}")
         except Exception as exc:  # a failed reel must not lose the carousel
+            if not carousels_published(cfg):
+                raise QualityError(f"reel failed: {exc}")  # Reels only: nothing to post, leave the slot free
             print(f"    ! reel failed: {exc}")
     path = posts.POSTS_DIR / f"{post_id}.yaml"
     posts.save(path, post)
@@ -109,11 +112,17 @@ def make_carousel(cfg: dict, when: datetime, offline: bool = False, pillar_name:
 WEEKDAYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"]
 
 
+def carousels_published(cfg: dict) -> bool:
+    return cfg["carousel"].get("publish", True)
+
+
 def add_reel(cfg: dict, post: dict, mode: str | None = None, when: datetime | None = None) -> dict:
-    """Render the post's Reel and schedule it (default: offset_days after the carousel, at reels.time).
-    Reels on kit_weekdays are silent kits to finish in Edits; the rest get royalty-free music and auto-publish."""
+    """Render the post's Reel and schedule it: at the post's own slot in Reels-only mode, otherwise
+    offset_days after the carousel at reels.time. Reels on kit_weekdays are silent kits to finish in Edits."""
     from . import reel
     rc = cfg["reels"]
+    if when is None and not carousels_published(cfg):
+        when = posts.scheduled_at(post)  # Reels only: the Reel takes the schedule slot itself
     if when is None:
         hh, mm = map(int, rc["time"].split(":"))
         when = (posts.scheduled_at(post) + timedelta(days=rc["offset_days"])).replace(

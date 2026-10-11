@@ -4,7 +4,7 @@ pillar: hidden-gems
 destination: Tirthan Valley
 topic: '4 hidden spots around Tirthan Valley most people skip (Chehni Kothi tower, Serolsar Lake, Sharchi village, Chhoie waterfall), with real October costs from Delhi: overnight bus ₹700-1,800, homestays ₹800-1,500 a night'
 scheduled_at: '2026-10-14T19:30:00+05:30'
-status: scheduled
+status: skip
 style: classic
 images:
 - media/posts/2026-10-06-1930-tirthan-valley/01.jpg
@@ -157,5 +157,5 @@ reel:
     bpm: 95.0
     start: 0.0
     mood: adventure
-  scheduled_at: '2026-10-15T19:30:00+05:30'
+  scheduled_at: '2026-10-14T19:30:00+05:30'
   status: scheduled

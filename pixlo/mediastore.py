@@ -1,10 +1,10 @@
 """Rendered slides and Reels live on a separate `media` branch, not on main.
 
 Instagram fetches the files from that branch. The branch is always ONE commit with no history, holding only
-the posts that still have something to publish, so published media really disappears and the repo stays small.
+the files still waiting to be published, so published media really disappears and the repo stays small.
 
   pull()  copy the branch's files into media/posts/ (ignored by git on main)
-  sync()  rebuild the branch from media/posts/, minus the posts that are fully published
+  sync()  rebuild the branch from media/posts/, minus everything that is published or skipped
 """
 import os
 import shutil
@@ -39,13 +39,15 @@ def remote_sha(name: str) -> str | None:
     return out.split()[0] if out else None
 
 
-def needed_ids() -> set[str]:
-    """Posts whose carousel or Reel is still waiting to be published (or failed and may be retried)."""
+def needed_files() -> set[str]:
+    """Repo-relative paths of every file still waiting to be published (or failed and may be retried)."""
     keep = set()
     for _, p in posts.load_all():
+        if p.get("status") not in posts.DONE:
+            keep.update(posts.images(p))
         reel = p.get("reel") or {}
-        if p.get("status") not in posts.DONE or (reel and reel.get("status") not in posts.DONE):
-            keep.add(p["id"])
+        if reel and reel.get("status") not in posts.DONE:
+            keep.update(x for x in (reel.get("video"), reel.get("cover")) if x)
     return keep
 
 
@@ -67,38 +69,36 @@ def pull(cfg: dict) -> int:
 
 
 def sync(cfg: dict) -> str:
-    """Rebuild the media branch as a single fresh commit: what's on it now, plus local media/posts/,
-    minus posts that are fully published. Returns a short description of what happened."""
+    """Rebuild the media branch as a single fresh commit holding exactly the files still to be published,
+    taken from media/posts/ or from the branch as it is now. Returns a short description of what happened."""
     name = branch(cfg)
-    keep = needed_ids()
+    keep = needed_files()
     old = remote_sha(name)
     with tempfile.TemporaryDirectory() as tmp:
-        stage = Path(tmp) / "tree"
+        current, stage = Path(tmp) / "current", Path(tmp) / "tree"
+        current.mkdir()
         stage.mkdir()
         if old:
             _git("fetch", "--quiet", "origin", name)
-            _checkout(old, stage)
-        staged = stage / "media" / "posts"
-        staged.mkdir(parents=True, exist_ok=True)
-        for folder in (MEDIA_DIR.iterdir() if MEDIA_DIR.exists() else []):
-            if folder.is_dir() and folder.name in keep:
-                shutil.copytree(folder, staged / folder.name, dirs_exist_ok=True)
-        removed = [d.name for d in staged.iterdir() if d.is_dir() and d.name not in keep]
-        for gone in removed:
-            shutil.rmtree(staged / gone)
+            _checkout(old, current)
+        before = {f.relative_to(current).as_posix() for f in current.rglob("*") if f.is_file()}
+        for rel in sorted(keep):
+            source = ROOT / rel if (ROOT / rel).exists() else current / rel
+            if source.exists():
+                (stage / rel).parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(source, stage / rel)
+        after = {f.relative_to(stage).as_posix() for f in stage.rglob("*") if f.is_file()}
 
         env = {"GIT_INDEX_FILE": str(Path(tmp) / "index"), "GIT_WORK_TREE": str(stage),
                "GIT_AUTHOR_NAME": "pixlo-bot", "GIT_AUTHOR_EMAIL": "pixlo-bot@users.noreply.github.com",
                "GIT_COMMITTER_NAME": "pixlo-bot", "GIT_COMMITTER_EMAIL": "pixlo-bot@users.noreply.github.com"}
         _git("add", "--all", "--force", ".", env=env)
         tree = _git("write-tree", env=env)
-        kept = sorted(d.name for d in staged.iterdir() if d.is_dir())
         if tree == (_git("rev-parse", f"{old}^{{tree}}") if old else EMPTY_TREE):
-            return f"media branch already up to date ({len(kept)} post(s))"
+            return f"media branch already up to date ({len(after)} file(s))"
         # No parent commit: the branch never accumulates history, so deleted files are really gone
-        commit = _git("commit-tree", tree, "-m", f"media for {len(kept)} unpublished post(s)", env=env)
+        commit = _git("commit-tree", tree, "-m", f"{len(after)} file(s) waiting to be published", env=env)
         _git("push", "--quiet", "--force", "origin", f"{commit}:refs/heads/{name}")
     remote_sha.cache_clear()
-    return (f"media branch updated: {len(kept)} post(s) kept"
-            + (f", removed {', '.join(removed)}" if removed else ""))
-
+    return (f"media branch updated: {len(after)} file(s) kept, {len(after - before)} added, "
+            f"{len(before - after)} deleted")
