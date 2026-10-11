@@ -1,8 +1,13 @@
-"""Original background music, synthesised from scratch for each Reel (no samples, no third-party audio).
+"""Original background music, composed from scratch for each Reel (no third-party recordings or loops).
 
-A small arranger picks a key, tempo and chord progression for the post's mood, then renders soft pads,
-plucked-string arpeggios, a bass line, a sparse melody and light drums with plain numpy, adds a convolution
-reverb and writes a WAV. The same post id always gives the same track; different posts get different ones.
+A small arranger picks a key, tempo and chord progression for the post's mood and writes the notes: pad chords,
+an arpeggio, a bass line, a sparse melody and light drums. The same post id always gives the same track.
+
+The notes are then played one of two ways:
+- "sampled" (default): through real sampled instruments (guitar, piano, strings, kalimba, drum kit) from the
+  MIT-licensed MuseScore General SoundFont, rendered offline with tinysoundfont. The tune is ours; only the
+  single-note instrument samples come from the SoundFont.
+- "synth": with the plain numpy synthesiser below. Used when the SoundFont can't be loaded.
 """
 import hashlib
 import wave
@@ -10,7 +15,11 @@ from pathlib import Path
 
 import numpy as np
 
+from .config import ROOT
+
 SR = 44100
+SOUNDFONT_URL = "https://ftp.osuosl.org/pub/musescore/soundfont/MuseScore_General/MuseScore_General.sf3"
+SOUNDFONT = ROOT / "media" / "cache" / "soundfont" / "MuseScore_General.sf3"
 MAJOR, MINOR = [0, 2, 4, 5, 7, 9, 11], [0, 2, 3, 5, 7, 8, 10]
 PENTA_MAJOR, PENTA_MINOR = [0, 2, 4, 7, 9], [0, 3, 5, 7, 10]
 
@@ -27,6 +36,19 @@ MOODS = {
     "epic":      {"bpm": (84, 92),   "scale": MINOR, "prog": [[0, 5, 2, 6], [0, 6, 5, 6]],
                   "arp": "eighths",  "drums": "epic",  "sevenths": False, "bright": 0.65},
 }
+
+# General MIDI programs for the sampled instruments, per mood
+GM = {
+    "calm":      {"pluck": 24, "pad": 89, "bass": 32, "bell": 11},   # nylon guitar, warm pad, acoustic bass, vibraphone
+    "romantic":  {"pluck": 0,  "pad": 49, "bass": 32, "bell": 8},    # piano, slow strings, acoustic bass, celesta
+    "adventure": {"pluck": 25, "pad": 48, "bass": 33, "bell": 12},   # steel guitar, strings, fingered bass, marimba
+    "upbeat":    {"pluck": 24, "pad": 89, "bass": 33, "bell": 108},  # nylon guitar, warm pad, fingered bass, kalimba
+    "epic":      {"pluck": 46, "pad": 48, "bass": 43, "bell": 14},   # harp, strings, contrabass, tubular bells
+}
+DRUM_NOTES = {"kick": 36, "hat": 42, "clap": 39, "tom_hi": 47, "tom_lo": 43}  # General MIDI percussion keys
+# Sampled instruments differ a lot in loudness, so each part is rendered alone and set to this level
+# (dB relative to the arpeggio, measured while the part is sounding) before mixing
+LEVEL_DB = {"pluck": 0.0, "bass": -3.0, "drums": -3.0, "bell": -5.0, "pad": -8.0}
 
 
 def _hz(midi: float) -> float:
@@ -141,45 +163,41 @@ def plan(mood: str, seed_text: str) -> dict:
     }
 
 
-def render(p: dict, duration: float, out_path: Path) -> Path:
+def arrange(p: dict, duration: float) -> list[dict]:
+    """Write the notes: a list of {part, t (seconds), dur, note (MIDI), gain, pan}."""
     m = MOODS[p["mood"]]
     rng = np.random.default_rng(p["seed"])
     beat = 60 / p["bpm"]
     bar = 4 * beat
     scale, root = m["scale"], p["root"]
     penta = PENTA_MAJOR if scale is MAJOR else PENTA_MINOR
-    n = int((duration + 2.0) * SR)
-    dry, wet_send = np.zeros((n, 2)), np.zeros((n, 2))
+    events: list[dict] = []
+
+    def add(part: str, t: float, dur: float, note: int, gain: float, pan: float = 0.0) -> None:
+        events.append({"part": part, "t": t, "dur": dur, "note": int(note), "gain": gain, "pan": pan})
 
     def degree(d: int, octave: int = 0) -> int:
         return root + 12 * (octave + d // 7) + scale[d % 7]
 
     melody_note = root + 24 + penta[int(rng.integers(len(penta)))]
-    bars = int(np.ceil((duration + 1) / bar))
-    for b in range(bars):
+    for b in range(int(np.ceil((duration + 1) / bar))):
         t0 = b * bar
         d = p["prog"][b % len(p["prog"])]
         chord = [degree(d), degree(d + 2), degree(d + 4)] + ([degree(d + 6)] if m["sevenths"] else [])
 
-        # Pad: chord in the middle register, slightly detuned left/right
-        for note in chord:
-            f = _hz(note + 12)
-            _place(wet_send, _pad(f, bar + 0.3, -5), t0, 0.07, -0.5)
-            _place(wet_send, _pad(f, bar + 0.3, +5), t0, 0.07, 0.5)
+        for note in chord:  # pad: the chord in the middle register
+            add("pad", t0, bar + 0.3, note + 12, 0.07)
 
-        # Bass
-        bass_hits = [0, 2] if m["drums"] in ("none", "soft") else [0, 1.5, 2, 3]
-        for k in bass_hits:
-            _place(dry, _bass(_hz(degree(d) - 12), beat * 1.5), t0 + k * beat, 0.32)
+        for k in ([0, 2] if m["drums"] in ("none", "soft") else [0, 1.5, 2, 3]):
+            add("bass", t0 + k * beat, beat * 1.5, degree(d) - 12, 0.32)
 
-        # Plucked arpeggio over two octaves
+        # Arpeggio over two octaves
         tones = sorted(chord) + [x + 12 for x in sorted(chord)]
         steps = 8 if m["arp"] == "eighths" else 4
         pattern = [0, 2, 1, 3, 2, 4, 3, 5] if steps == 8 else [0, 2, 3, 4]
-        for s in range(steps):
-            note = tones[pattern[s] % len(tones)] + 12
-            _place(wet_send, _pluck(_hz(note), 1.4, m["bright"], rng), t0 + s * bar / steps,
-                   0.22 if s % 2 == 0 else 0.16, pan=0.35 if s % 2 else -0.35)
+        for i in range(steps):
+            add("pluck", t0 + i * bar / steps, 1.4, tones[pattern[i] % len(tones)] + 12,
+                0.22 if i % 2 == 0 else 0.16, 0.35 if i % 2 else -0.35)
 
         # Sparse melody from bar 2: a step-wise walk on the pentatonic scale, landing on chord tones
         if b >= 1:
@@ -187,12 +205,11 @@ def render(p: dict, duration: float, out_path: Path) -> Path:
                 if rng.random() < 0.75:
                     cands = [root + 24 + 12 * o + iv for o in (0, 1) for iv in penta]
                     cands = [c for c in cands if abs(c - melody_note) <= 4] or cands
-                    on_beat = k in (0, 2)
                     chord_pcs = {x % 12 for x in chord}
-                    if on_beat and any(c % 12 in chord_pcs for c in cands):
+                    if k in (0, 2) and any(c % 12 in chord_pcs for c in cands):
                         cands = [c for c in cands if c % 12 in chord_pcs]
                     melody_note = int(rng.choice(cands))
-                    _place(wet_send, _bell(_hz(melody_note), beat * 2), t0 + k * beat, 0.13, 0.1)
+                    add("bell", t0 + k * beat, beat * 2, melody_note, 0.13, 0.1)
 
         # Drums (enter on bar 2 except pop, which needs energy from the first second)
         style = m["drums"]
@@ -201,24 +218,144 @@ def render(p: dict, duration: float, out_path: Path) -> Path:
         for k in range(8):
             at = t0 + k * beat / 2
             if style in ("pop", "groove"):
-                _place(dry, _hat(rng), at, 0.10 if k % 2 else 0.06, 0.4)
+                add("hat", at, 0.07, 0, 0.10 if k % 2 else 0.06, 0.4)
             if style == "soft" and k % 2 == 1:
-                _place(dry, _hat(rng), at, 0.035, 0.3)
-        kicks = {"pop": [0, 2], "groove": [0, 1.5, 2], "epic": [0, 2.5], "soft": [0]}[style]
-        for k in kicks:
-            _place(dry, _kick(), t0 + k * beat, 0.55 if style != "soft" else 0.3)
+                add("hat", at, 0.07, 0, 0.035, 0.3)
+        for k in {"pop": [0, 2], "groove": [0, 1.5, 2], "epic": [0, 2.5], "soft": [0]}[style]:
+            add("kick", t0 + k * beat, 0.4, 0, 0.55 if style != "soft" else 0.3)
         if style in ("pop", "groove"):
             for k in (1, 3):
-                _place(dry, _clap(rng), t0 + k * beat, 0.22)
+                add("clap", t0 + k * beat, 0.25, 0, 0.22)
         if style == "epic":
-            _place(dry, _tom(110), t0 + 3 * beat, 0.35, -0.3)
-            _place(dry, _tom(82), t0 + 3.5 * beat, 0.35, 0.3)
-            _place(dry, _clap(rng), t0 + 2 * beat, 0.25)
+            add("tom_hi", t0 + 3 * beat, 0.5, 0, 0.35, -0.3)
+            add("tom_lo", t0 + 3.5 * beat, 0.5, 0, 0.35, 0.3)
+            add("clap", t0 + 2 * beat, 0.25, 0, 0.25)
+    return events
 
-    mix = dry + wet_send + 0.32 * _reverb(wet_send, rng)
-    mix = _lowpass(mix, 9000)
-    mix = np.tanh(1.3 * mix) / np.tanh(1.3)      # gentle saturation glues the mix
-    mix *= 0.9 / (np.abs(mix).max() + 1e-9)
+
+# ------------------------------------------------------------------ players
+def _play_synth(events: list[dict], p: dict, n: int) -> tuple[np.ndarray, np.ndarray]:
+    """Plain numpy synthesiser. Returns (dry, wet_send) stereo tracks."""
+    bright = MOODS[p["mood"]]["bright"]
+    rng = np.random.default_rng(p["seed"] + 1)
+    dry, wet = np.zeros((n, 2)), np.zeros((n, 2))
+    for e in events:
+        part, f = e["part"], _hz(e["note"])
+        if part == "pad":  # two slightly detuned layers, left and right
+            _place(wet, _pad(f, e["dur"], -5), e["t"], e["gain"], -0.5)
+            _place(wet, _pad(f, e["dur"], +5), e["t"], e["gain"], 0.5)
+        elif part == "pluck":
+            _place(wet, _pluck(f, e["dur"], bright, rng), e["t"], e["gain"], e["pan"])
+        elif part == "bell":
+            _place(wet, _bell(f, e["dur"]), e["t"], e["gain"], e["pan"])
+        elif part == "bass":
+            _place(dry, _bass(f, e["dur"]), e["t"], e["gain"])
+        else:
+            sound = {"kick": _kick, "hat": lambda: _hat(rng), "clap": lambda: _clap(rng),
+                     "tom_hi": lambda: _tom(110), "tom_lo": lambda: _tom(82)}[part]()
+            _place(dry, sound, e["t"], e["gain"], e["pan"])
+    return dry, wet
+
+
+def soundfont_path() -> Path | None:
+    """The SoundFont file, downloaded once into media/cache. None if it can't be fetched."""
+    if not SOUNDFONT.exists():
+        import requests
+        try:
+            resp = requests.get(SOUNDFONT_URL, timeout=120)
+            resp.raise_for_status()
+        except requests.RequestException as exc:
+            print(f"    ! SoundFont download failed ({type(exc).__name__}); using the built-in synth")
+            return None
+        SOUNDFONT.parent.mkdir(parents=True, exist_ok=True)
+        SOUNDFONT.write_bytes(resp.content)
+    return SOUNDFONT
+
+
+def _part(event: dict) -> str:
+    return "drums" if event["part"] in DRUM_NOTES else event["part"]
+
+
+def _play_sampled(events: list[dict], p: dict, n: int, sf2: Path) -> tuple[np.ndarray, np.ndarray]:
+    """Sampled instruments from the SoundFont. Returns (dry, wet_send) stereo tracks."""
+    import tinysoundfont
+
+    programs = GM[p["mood"]]
+    rng = np.random.default_rng(p["seed"] + 1)
+    synth = tinysoundfont.Synth(samplerate=SR)
+    sfid = synth.sfload(str(sf2))
+    # channel: (part, pan 0-127). The arpeggio alternates between a left and a right channel.
+    channels = {0: ("pad", 64), 1: ("bass", 64), 2: ("pluck", 42), 3: ("pluck", 86), 4: ("bell", 70), 9: ("drums", 64)}
+    for ch, (part, pan) in channels.items():
+        if part == "drums":
+            synth.program_select(ch, sfid, 128, 0)
+        else:
+            synth.program_select(ch, sfid, 0, programs[part])
+        synth.control_change(ch, 10, pan)
+    loudest: dict[str, float] = {}
+    for e in events:
+        loudest[_part(e)] = max(loudest.get(_part(e), 0.0), e["gain"])
+
+    def play(parts: set[str]) -> np.ndarray:
+        actions = []  # (sample, on?, channel, key, velocity); note-offs sort before note-ons at the same sample
+        for e in events:
+            part = _part(e)
+            if part not in parts:
+                continue
+            ch = {"pad": 0, "bass": 1, "bell": 4, "drums": 9}.get(part, 2 if e["pan"] < 0 else 3)
+            key = DRUM_NOTES[e["part"]] if part == "drums" else e["note"]
+            # A human touch: a few milliseconds and a little loudness variation per note
+            start = max(0, int((e["t"] + (0 if part in ("pad", "drums") else rng.normal(0, 0.006))) * SR))
+            vel = int(np.clip(110 * (e["gain"] / loudest[part]) ** 0.6 * rng.uniform(0.9, 1.0), 20, 120))
+            actions.append((start, 1, ch, key, vel))
+            actions.append((start + int(max(e["dur"], 0.3) * SR), 0, ch, key, 0))
+        out = np.zeros((n, 2), np.float32)
+        pos = 0
+        for at, on, ch, key, vel in sorted(a for a in actions if a[0] < n):
+            if at > pos:
+                out[pos:at] = np.frombuffer(synth.generate(at - pos), np.float32).reshape(-1, 2)
+                pos = at
+            if on:
+                synth.noteon(ch, key, vel)
+            else:
+                synth.noteoff(ch, key)
+        if pos < n:
+            out[pos:] = np.frombuffer(synth.generate(n - pos), np.float32).reshape(-1, 2)
+        synth.notes_off()
+        synth.sounds_off()
+        return out.astype(np.float64)
+
+    dry, wet = np.zeros((n, 2)), np.zeros((n, 2))
+    for part in loudest:
+        stem = play({part})
+        sounding = np.abs(stem).max(axis=1) > 1e-4
+        if not sounding.any():
+            continue
+        stem *= 10 ** (LEVEL_DB[part] / 20) / np.sqrt((stem[sounding] ** 2).mean())
+        (dry if part in ("bass", "drums") else wet)[:] += stem
+    return dry, wet
+
+
+def render(p: dict, duration: float, out_path: Path, instruments: str = "sampled") -> str:
+    """Compose and render the track to a WAV. Returns how it was played: "sampled" or "synth"."""
+    n = int((duration + 2.0) * SR)
+    events = arrange(p, duration)
+    sf2 = soundfont_path() if instruments == "sampled" else None
+    played = "synth"
+    if sf2:
+        try:
+            dry, wet = _play_sampled(events, p, n, sf2)
+            played = "sampled"
+        except Exception as exc:  # a broken SoundFont or missing library must not stop the Reel
+            print(f"    ! sampled instruments failed ({exc}); using the built-in synth")
+    if played == "synth":
+        dry, wet = _play_synth(events, p, n)
+
+    rng = np.random.default_rng(p["seed"])
+    mix = dry + wet + (0.22 if played == "sampled" else 0.32) * _reverb(wet, rng)
+    mix = _lowpass(mix, 14000 if played == "sampled" else 9000)
+    mix = mix / (np.abs(mix).max() + 1e-9)
+    mix = np.tanh(1.3 * mix) / np.tanh(1.3) * 0.9  # gentle saturation glues the mix
     mix = mix[: int((duration + 0.5) * SR)]
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
@@ -227,4 +364,4 @@ def render(p: dict, duration: float, out_path: Path) -> Path:
         w.setsampwidth(2)
         w.setframerate(SR)
         w.writeframes((mix * 32767).astype("<i2").tobytes())
-    return out_path
+    return played

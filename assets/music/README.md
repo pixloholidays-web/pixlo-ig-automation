@@ -1,7 +1,9 @@
 # Reel music (optional)
 
-You don't need anything here. Every Reel gets **original music composed for it** by `pixlo/synth.py`,
-so there's no third-party audio and nothing for a copyright system to match.
+You don't need anything here. Every Reel gets **an original tune composed for it** by `pixlo/synth.py`,
+so no third-party recording or loop is used and there's nothing for a copyright system to match.
+By default the tune is played with sampled instruments from the MIT-licensed MuseScore General SoundFont;
+set `reels.instruments: synth` in `config.yaml` to use only the built-in electronic tones.
 
 Use this folder only for tracks **you own** or have a written licence for (for example music you
 commissioned). When a track here matches the post's mood, it's used instead of the generated one.

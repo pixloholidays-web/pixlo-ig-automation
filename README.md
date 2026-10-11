@@ -1,6 +1,6 @@
 # Pixlo: Instagram travel page automation
 
-General travel content in Hinglish, built to earn **sends and saves** (the signals Instagram uses to reach non-followers). Each post is researched, written, checked, turned into a Reel with 2.5D camera motion and original music, and published automatically.
+General travel content in English, built to earn **sends and saves** (the signals Instagram uses to reach non-followers). Each post is researched, written, checked, turned into a Reel with 2.5D camera motion and original music, and published automatically.
 
 **Currently Reels only:** no image posts go out (`carousel.publish: false` in `config.yaml`). Set it to `true` to also publish each post as a carousel, with its Reel a day later.
 
@@ -26,7 +26,7 @@ Daily 06:00 IST   "Generate posts"
                   ─► photos: media/own ▸ Unsplash ▸ Pexels (never reused, photographers credited)
                   ─► Claude looks at the photos and writes slides + caption + 5 hashtags
                   ─► quality check (rules + AI editor; up to 3 rewrites, else the slot is skipped)
-                  ─► build a ~20 s Reel from the slides' text and photos
+                  ─► build a ~20 s Reel from the slides' text and photos, with a route map and original music
                   ─► post text ─► main branch      Reel ─► media branch
 
 18:30–21:00 IST   "Publish due posts" (every 30 min)
@@ -46,9 +46,15 @@ GitHub often starts scheduled runs late, so a 19:30 post may go out some time af
 
 ### Reels
 Every post becomes a ~20 s Reel (1080×1920), published at its schedule slot. The slides Claude writes are the Reel's script: one shot per slide.
-- **2.5D parallax:** Depth Anything V2 (ONNX, CPU) splits each photo into depth layers and a virtual camera pushes in, pans or rises, so stills feel like drone or dolly shots. Free, no GPU, about 2 minutes per Reel.
+- **2.5D parallax:** Depth Anything V2 (ONNX, CPU) splits each photo into depth layers and a virtual camera pushes in, pans or rises, so stills feel like drone or dolly shots. Free, no GPU, about 3 minutes per Reel.
 - **Text:** short animated text per shot (`reel_text`), the hook fully visible on frame 1, a save/follow end card.
-- **Music is original, with no copyright risk.** Every Reel gets its own track composed by `pixlo/synth.py` in the post's mood (calm, romantic, adventure, upbeat, epic), at a tempo the video cuts follow. No samples or third-party audio are used. Audio is normalised to about −14 LUFS. Tracks you own can go in `assets/music/` (see its README); they're used first when one matches the mood.
+- **Colour grade:** every photo gets the same look (a little more contrast and colour, warm highlights, cool shadows, soft vignette), so shots from different photographers feel like one film.
+- **Place name behind the subject:** on the cover, the destination appears in huge letters behind the mountains, temple or trees. It is only used when the photo suits it and every letter stays readable; otherwise the cover uses the normal text card. The cutout uses the depth map for skies and U²-Net (the model behind `rembg`) for other subjects.
+- **Route map:** right after the hook, an animated map draws the route from the starting city to the destination. Map shapes are from Natural Earth (public domain). No country or state borders are drawn, because border depictions are legally sensitive in India.
+- **Transitions:** whip, zoom and flash cuts instead of one plain crossfade.
+- **Music is original.** Every Reel gets its own tune, composed by `pixlo/synth.py` in the post's mood (calm, romantic, adventure, upbeat, epic), at a tempo the video cuts follow. No third-party recordings or loops are used. The tune is played with sampled real instruments (guitar, piano, strings, kalimba, drum kit) from the MIT-licensed MuseScore General SoundFont. Set `reels.instruments: synth` to use only the built-in electronic tones, which involve no outside samples at all. Audio is normalised to about −14 LUFS. Tracks you own can go in `assets/music/` (see its README); they're used first when one matches the mood.
+
+Each of these can be switched off under `reels:` in `config.yaml` (`grade`, `title_behind_subject`, `route_map`, `instruments`). The SoundFont, the cutout model and the map data are downloaded once into `media/cache/`.
 
 ### Where the files live
 - **`main` branch:** code, settings and one YAML file per post (`content/posts/`).
@@ -145,6 +151,7 @@ You don't need this for normal operation. It's for trying things out and preview
 ```powershell
 python -m venv .venv; .venv\Scripts\activate
 pip install -r requirements.txt
+pip install tinysoundfont     # sampled instruments for the Reel music (optional; without it the built-in synth is used)
 copy .env.example .env        # fill in your keys; this file is never committed
 ```
 
@@ -185,7 +192,7 @@ All in `config.yaml`:
 | `pillars` | Content themes the planner rotates through |
 | `destinations` | Places the planner picks from |
 | `carousel` | `publish` (false = Reels only), slide size and number of slides |
-| `reels` | On/off, how many days after the carousel, time, number of shots, music |
+| `reels` | On/off, number of shots, music and instruments, colour grade, place name behind the subject, route map |
 | `stock` | Photo sources and minimum photo width |
 | `quality` | Minimum hook score, number of rewrites, banned phrases |
 | `hosting` | `github_raw` (public repo) or `s3`; name of the media branch |
@@ -213,7 +220,7 @@ Open the failed run under **Actions** and read the step marked with a red cross.
 | `content/posts/*.yaml` | One file per post: `scheduled` → `published` / `failed` / `skip` |
 | `media/own/<destination-slug>/` | Your own photos |
 | `media/posts/<id>/` | Rendered slides and Reel. Not on `main`; kept on the `media` branch until published |
-| `media/cache/` | Downloaded stock photos and generated music. Local only |
+| `media/cache/` | Downloaded stock photos, generated music, the SoundFont, the cutout model and map data. Local only |
 | `assets/fonts/`, `assets/music/` | Poppins fonts; optional music you own |
 | `pixlo/planner.py` | Picks the pillar and destination shortlist, avoiding recent repeats |
 | `pixlo/research.py` | Claude with web search: topic, sourced facts, photo search queries |
@@ -222,6 +229,7 @@ Open the failed run under **Actions** and read the step marked with a red cross.
 | `pixlo/quality.py` | Rule checks + AI editor: hook score, unsupported claims, engagement bait |
 | `pixlo/carousel.py` | Slide renderer (`classic`, `panel`, `bold` styles) |
 | `pixlo/reel.py`, `pixlo/synth.py`, `pixlo/music.py` | Reel video, original music, beat analysis |
+| `pixlo/cutout.py`, `pixlo/routemap.py` | Foreground cutout for the cover title; animated route map |
 | `pixlo/instagram.py` | Instagram API client (Instagram Login and Facebook Login tokens) |
 | `pixlo/hosting.py`, `pixlo/mediastore.py` | Public file URLs; the `media` branch |
 | `pixlo/pipeline.py`, `pixlo/posts.py`, `pixlo/preview.py`, `pixlo/llm.py` | Pipeline steps, post files, preview page, Claude Code calls |

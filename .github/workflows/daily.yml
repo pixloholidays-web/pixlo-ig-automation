@@ -29,12 +29,23 @@ jobs:
           python-version: "3.12"
           cache: pip
       - run: pip install -r requirements.txt
+      # Sampled instruments for the Reel music. --no-deps skips pyaudio, which is only for live playback
+      - run: pip install --no-deps tinysoundfont
 
       - name: Cache depth model
         uses: actions/cache@v4
         with:
           path: ~/.cache/huggingface
           key: hf-depth-anything-v2-small
+
+      - name: Cache SoundFont, cutout model and map data
+        uses: actions/cache@v4
+        with:
+          path: |
+            media/cache/soundfont
+            media/cache/models
+            media/cache/geo
+          key: reel-assets-v1
 
       - name: Fetch unpublished media
         run: python cli.py media-pull

@@ -85,6 +85,7 @@ def make_carousel(cfg: dict, when: datetime, offline: bool = False, pillar_name:
         "hashtags": copy["hashtags"],
         "alt_text": copy["alt_text"],
         "music_mood": copy.get("music_mood"),
+        "route": research.route_of(facts),
         "photos": [{"id": photos[i]["id"], "file": photos[i]["path"].relative_to(ROOT).as_posix(),
                     "credit": photos[i].get("credit")} for i in used],
         "sources": sorted({f["source_url"] for f in facts["facts"]}),

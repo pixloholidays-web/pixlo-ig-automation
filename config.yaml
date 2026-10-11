@@ -28,7 +28,7 @@ schedule:
 copy:
   model: opus                        # Claude Code model alias (your subscription)
   fallback_model: sonnet             # used if opus is overloaded or unavailable
-  language: Hinglish                 # Roman-script Hindi + English, the way Indian travellers text
+  language: English                  # plain conversational English, no Hindi or Hinglish words
   max_hashtags: 5                    # Instagram hard limit since Dec 2025
   niche: "Smart travel for Indians: hidden places, real budgets, exact itineraries"
   tone: >-
@@ -106,6 +106,10 @@ reels:
   max_shots: 8                       # cover + up to 6 info shots + CTA (~20 s)
   music_dir: assets/music            # your own tracks + library.yaml (see assets/music/README.md); preferred
   music_fallback: generate           # no matching track in your library -> original music composed for the post (synth.py)
+  instruments: sampled               # sampled = real instrument samples (MIT SoundFont); synth = built-in electronic tones
+  grade: true                        # one colour look across all shots
+  title_behind_subject: true         # cover: place name in huge letters behind the mountains/subject, when the photo suits it
+  route_map: true                    # animated map shot from the starting city to the destination
 
 stock:
   own_photos_dir: media/own          # media/own/<destination-slug>/*.jpg are used before any stock photo

@@ -280,7 +280,7 @@ def cmd_refresh_token(args, cfg):
 # ------------------------------------------------------------------- main
 def main():
     if hasattr(sys.stdout, "reconfigure"):
-        sys.stdout.reconfigure(encoding="utf-8")  # ✓, ₹ and Hinglish on Windows consoles
+        sys.stdout.reconfigure(encoding="utf-8")  # ✓ and ₹ on Windows consoles
     parser = argparse.ArgumentParser(description="Pixlo Instagram automation")
     sub = parser.add_subparsers(dest="cmd", required=True)
 

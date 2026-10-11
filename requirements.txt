@@ -10,3 +10,5 @@ opencv-python-headless>=4.9
 onnxruntime>=1.17
 huggingface_hub>=0.23
 imageio-ffmpeg>=0.5
+# Optional, for sampled instruments in the Reel music: pip install tinysoundfont
+# (kept out of this list because it pulls in pyaudio, which doesn't build on GitHub's Linux runners)

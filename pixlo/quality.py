@@ -19,7 +19,7 @@ Score and check:
 - photo_mismatch: slides whose named landmark is shown on a photo of a different place (from the photo notes).
 - engagement_bait: true if it asks for tags, shares, likes or comment-for-reward.
 - issues: anything else that would hurt watch time, saves or sends: slides that repeat each other,
-  vague filler, awkward or cringe Hinglish, text too long for a slide, a cover that gives the answer away.
+  vague filler, awkward or unnatural English, any Hindi or Hinglish words, text too long for a slide, a cover that gives the answer away.
   List at most 5 issues, the ones that matter most for reach, most important first. Each is one concrete
   fix instruction. Ignore nitpicks: a draft with a strong hook, no unsupported claims and no bait should pass."""
 

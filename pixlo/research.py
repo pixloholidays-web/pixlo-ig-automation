@@ -23,6 +23,11 @@ Return your result in the required JSON format:
 - photo_queries: 8-10 stock photo searches, each a concrete visual scene at this destination
   (e.g. "Key Monastery Spiti snow", "Chandratal lake blue", not "travel")
 - time_sensitive: caveats to mention, or ""
+- route: for the animated map. from_name: the Indian city most of this audience would start this trip from
+  (usually Delhi, Mumbai, Bengaluru, Kolkata, Chennai or Hyderabad), with from_lat/from_lon. to_name: the
+  destination as people call it (at most 18 characters), with to_lat/to_lon of its main base town.
+  Coordinates in decimal degrees. note: at most 6 words on distance or travel time
+  ("About 500 km by road"), only if one of your sources backs it, otherwise "".
 """
 
 SCHEMA = {
@@ -39,8 +44,16 @@ SCHEMA = {
         }},
         "photo_queries": {"type": "array", "items": {"type": "string"}},
         "time_sensitive": {"type": "string"},
+        "route": {
+            "type": "object",
+            "properties": {"from_name": {"type": "string"}, "from_lat": {"type": "number"},
+                           "from_lon": {"type": "number"}, "to_name": {"type": "string"},
+                           "to_lat": {"type": "number"}, "to_lon": {"type": "number"}, "note": {"type": "string"}},
+            "required": ["from_name", "from_lat", "from_lon", "to_name", "to_lat", "to_lon", "note"],
+            "additionalProperties": False,
+        },
     },
-    "required": ["destination", "topic", "hook_idea", "facts", "photo_queries", "time_sensitive"],
+    "required": ["destination", "topic", "hook_idea", "facts", "photo_queries", "time_sensitive", "route"],
     "additionalProperties": False,
 }
 
@@ -75,6 +88,16 @@ def offline_research(cfg: dict, pillar: dict, shortlist: list[str], month: str, 
                           f"{dest} mountains", f"{dest} local market", f"{dest} aerial", f"{dest} night"],
         "time_sensitive": "",
     }
+
+
+def route_of(research_data: dict) -> dict | None:
+    """The research route in the shape posts store it: {from: {name, lat, lon}, to: {...}, note}."""
+    r = research_data.get("route")
+    if not r:
+        return None
+    return {"from": {"name": r["from_name"], "lat": r["from_lat"], "lon": r["from_lon"]},
+            "to": {"name": r["to_name"], "lat": r["to_lat"], "lon": r["to_lon"]},
+            "note": r.get("note", "")}
 
 
 def facts_text(research_data: dict) -> str:

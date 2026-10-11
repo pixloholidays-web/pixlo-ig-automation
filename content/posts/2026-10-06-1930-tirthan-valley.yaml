@@ -19,59 +19,68 @@ images:
 slides:
 - kind: cover
   photo: 8
-  title: Pehli heavy snow, aur Tirthan ka yeh trail band
-  body: October last reliable month hai. 4 spots, real costs.
+  title: First heavy snow shuts this Tirthan trail
+  body: October is the last reliable month. 4 spots, real costs.
   text_position: top
+  reel_text: First heavy snow shuts this trail
 - kind: info
   photo: 1
-  title: October ki do deadlines
-  body: Jalori Pass aur Serolsar trail pehli heavy snow pe band ho jaate hain. Trout fishing season 31 October ko khatam, ₹300 per rod per day. Road status locally check karo.
+  title: Two October deadlines
+  body: Jalori Pass and the Serolsar trail close with the first heavy snow. Trout fishing season ends 31 October, ₹300 per rod per day. Check road status locally.
   text_position: top
+  reel_text: Trail closes with first heavy snow
 - kind: info
   photo: 0
   title: 1. Serolsar Lake, 3,100 m
-  body: Jalori Pass se 5 km one way, 2 to 2.5 ghante. Jibhi se taxi ₹1,000-2,000 return. Pass pe 5-15°C, warm layers rakho.
+  body: 5 km one way from Jalori Pass, 2 to 2.5 hours. Taxi from Jibhi ₹1,000-2,000 return. 5-15°C at the pass, carry warm layers.
   text_position: top
+  reel_text: 'Serolsar Lake: 5 km from Jalori'
 - kind: info
   photo: 4
   title: 2. Chehni Kothi tower
-  body: '45 metre ka Kath Kuni tower: timber aur stone ki layers, cement ya metal fasteners nahi. Trailhead se 45 minute uphill. Public ke liye open nahi, bahar se dekho.'
+  body: 'A 45 metre Kath Kuni tower: layers of timber and stone, no cement or metal fasteners. 45 minutes uphill from the trailhead. Not open to the public, see it from outside.'
   text_position: top
+  reel_text: 45 m tower, no cement used
 - kind: info
   photo: 3
   title: 3. Sharchi village
-  body: Lagbhag 50 gharon ka gaon, Gushaini bridge junction se roughly 15 km. Last 3-4 km stony road hai. Yeh info 2020 ki hai, condition pooch ke jao.
+  body: A village of about 50 houses, roughly 15 km from the Gushaini bridge junction. The last 3-4 km is a stony road. This info is from 2020, ask about the condition before you go.
   text_position: top
+  reel_text: 'Sharchi: a 50-house village'
 - kind: info
   photo: 5
   title: 4. Chhoie Waterfall
-  body: Nagini village se 45 minute ka short hike, dense forest ke beech se. Aut se Gushaini/Nagini taxi ₹800-1,200 lagti hai.
+  body: A short 45 minute hike from Nagini village, through dense forest. Taxi from Aut to Gushaini/Nagini costs ₹800-1,200.
   text_position: bottom
+  reel_text: 'Waterfall: 45 minute forest hike'
 - kind: info
   photo: 6
-  title: Delhi se kaise pahunche
-  body: ISBT Kashmere Gate se 5:30-7:30 PM ki bus, Aut subah 6 AM ke aaspaas. HRTC ₹700-900, AC Volvo ₹1,300-1,800. Aut se Banjar local bus ₹40-50.
+  title: Getting there from Delhi
+  body: Bus from ISBT Kashmere Gate at 5:30-7:30 PM, reaching Aut around 6 AM. HRTC ₹700-900, AC Volvo ₹1,300-1,800. Local bus from Aut to Banjar ₹40-50.
   text_position: bottom
+  reel_text: 'Overnight bus from Delhi: ₹700-1,800'
 - kind: info
   photo: 2
-  title: Stay aur permit ka kharcha
-  body: Gushaini mein budget homestay ₹800-1,500 a night. Valley ke liye permit nahi chahiye. Sirf GHNP core zone ka ₹100 per day, Indians ke liye.
+  title: What stay and permits cost
+  body: Budget homestays in Gushaini ₹800-1,500 a night. No permit needed for the valley. Only the GHNP core zone costs ₹100 per day, for Indians.
   text_position: top
+  reel_text: Homestays ₹800-1,500 a night
 - kind: cta
   photo: 7
-  title: Save kar lo, trip pe kaam aayega
-  body: '@pixloholidays follow karo: hidden jagah, real budget, sourced numbers.'
+  title: Save this for your trip
+  body: 'Follow @pixloholidays: hidden places, real budgets, sourced numbers.'
   text_position: top
+  reel_text: Save this for your trip
 caption: |-
-  Tirthan Valley in October: Serolsar Lake, Chehni Kothi, Sharchi aur Chhoie waterfall, Delhi se real costs ke saath 🏔️
+  Tirthan Valley in October: Serolsar Lake, Chehni Kothi, Sharchi and Chhoie waterfall, with real costs from Delhi 🏔️
 
-  Delhi se about 511 km, 10-12 ghante by road. Friday shaam 5:30-7:30 PM ki bus pakdo, Aut subah 6 AM ke aaspaas.
-  Autumn mein Jalori Pass pe saal ki best visibility aur coloured foliage milti hai 🍂
-  Thoda upgrade chahiye toh riverside cottages ₹2,000-4,000 a night.
-  July-August avoid karo: Serolsar trail slippery hota hai, landslides possible.
-  Note: fares August 2026 ke guides se hain, Dussehra/Diwali rush mein badh sakte hain. Jalori Pass ka road status jaane se pehle locally check karo ❄️
+  About 511 km from Delhi, 10-12 hours by road. Take a Friday evening bus at 5:30-7:30 PM and you reach Aut around 6 AM.
+  In autumn Jalori Pass has the year's best visibility and coloured foliage 🍂
+  For a small upgrade, riverside cottages are ₹2,000-4,000 a night.
+  Avoid July-August: the Serolsar trail gets slippery and landslides are possible.
+  Note: fares are from August 2026 guides and can rise in the Dussehra/Diwali rush. Check Jalori Pass road status locally before you go ❄️
 
-  Plan banana hai? "TRIP" DM karo
+  Planning this trip? DM us "TRIP"
 hashtags:
 - tirthanvalley
 - serolsarlake
@@ -146,7 +155,9 @@ reel:
   video: media/posts/2026-10-06-1930-tirthan-valley/reel.mp4
   cover: media/posts/2026-10-06-1930-tirthan-valley/reel_cover.jpg
   mode: auto
-  duration: 19.3
+  duration: 21.2
+  title_behind_subject: false
+  route_map: true
   music:
     id: original:4023017669
     file: media/cache/music/original_2026-10-06-1930-tirthan-valley.wav
@@ -157,5 +168,16 @@ reel:
     bpm: 95.0
     start: 0.0
     mood: adventure
+    instruments: sampled
   scheduled_at: '2026-10-14T19:30:00+05:30'
   status: scheduled
+route:
+  from:
+    name: Delhi
+    lat: 28.61
+    lon: 77.21
+  to:
+    name: Tirthan Valley
+    lat: 31.64
+    lon: 77.43
+  note: About 511 km, 10-12 hours

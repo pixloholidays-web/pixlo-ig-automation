@@ -108,7 +108,7 @@ def reel_caption(post: dict) -> str:
     """Reel caption: the post's caption (+ a pointer to the carousel when one is published), music credit,
     photo credits, hashtags."""
     lines = post["caption"].strip().split("\n")
-    pointer = "Pura breakdown (costs ke saath) humare carousel mein, profile pe 📌"
+    pointer = "The full breakdown with costs is in the carousel on our profile 📌"
     if post.get("status") == "skip":  # Reels only: there is no carousel to point to
         body = "\n".join(lines)
     elif lines and "DM" in lines[-1]:  # keep the DM line last
