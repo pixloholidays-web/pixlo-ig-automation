@@ -170,8 +170,8 @@ reel:
     mood: adventure
     instruments: sampled
   scheduled_at: '2026-10-14T19:30:00+05:30'
-  status: scheduled
-  attempts: 2
+  status: failed
+  attempts: 3
   last_error: 'OAuthException 200: API access blocked.'
 route:
   from:
