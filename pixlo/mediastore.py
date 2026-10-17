@@ -69,6 +69,18 @@ def pull(cfg: dict) -> int:
 
 
 def sync(cfg: dict) -> str:
+    """Rebuild the media branch, retrying if another workflow changed it at the same moment."""
+    for attempt in range(4):
+        try:
+            return _sync_once(cfg)
+        except RuntimeError as exc:
+            if "stale info" not in str(exc) and "rejected" not in str(exc) or attempt == 3:
+                raise
+            remote_sha.cache_clear()  # someone else pushed first: start again from their version
+    raise RuntimeError("unreachable")
+
+
+def _sync_once(cfg: dict) -> str:
     """Rebuild the media branch as a single fresh commit holding exactly the files still to be published,
     taken from media/posts/ or from the branch as it is now. Returns a short description of what happened."""
     name = branch(cfg)
@@ -98,7 +110,9 @@ def sync(cfg: dict) -> str:
             return f"media branch already up to date ({len(after)} file(s))"
         # No parent commit: the branch never accumulates history, so deleted files are really gone
         commit = _git("commit-tree", tree, "-m", f"{len(after)} file(s) waiting to be published", env=env)
-        _git("push", "--quiet", "--force", "origin", f"{commit}:refs/heads/{name}")
+        # Replace the branch only if it still points where we started (another job may have just synced)
+        _git("push", "--quiet", f"--force-with-lease=refs/heads/{name}:{old or ''}", "origin",
+             f"{commit}:refs/heads/{name}")
     remote_sha.cache_clear()
     return (f"media branch updated: {len(after)} file(s) kept, {len(after - before)} added, "
             f"{len(before - after)} deleted")

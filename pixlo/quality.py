@@ -17,7 +17,9 @@ Score and check:
   backed by the research facts. Copy the exact phrase. Exaggerating a sourced fact ("the best" when the
   source says "one of the best") and invented specifics (a day of the week, "exact" for old data) count too.
 - photo_mismatch: slides whose named landmark is shown on a photo of a different place (from the photo notes).
-- engagement_bait: true if it asks for tags, shares, likes or comment-for-reward.
+- engagement_bait: true if it asks for tags, shares, sends, likes or comment-for-reward.
+  The caption's closing line 'Planning this trip? DM us "TRIP"' is required by the brand: it is NOT
+  engagement bait, so never flag it or ask for it to be removed.
 - issues: anything else that would hurt watch time, saves or sends: slides that repeat each other,
   vague filler, awkward or unnatural English, any Hindi or Hinglish words, text too long for a slide, a cover that gives the answer away.
   List at most 5 issues, the ones that matter most for reach, most important first. Each is one concrete

@@ -3,17 +3,16 @@ name: Publish due posts
 
 on:
   schedule:
-    # Every 30 min from 18:30 to 21:00 IST only, around the 19:30 slots
-    # If you move slots in config.yaml, widen these hours.
-    # GitHub may delay scheduled runs by a few minutes.
-    - cron: "0,30 13-15 * * *"
+    # Every 20 minutes. GitHub delays or drops scheduled runs when it is busy, so frequent runs keep posts
+    # close to their time. Each run takes about a minute and is free on a public repo.
+    - cron: "*/20 * * * *"
   workflow_dispatch:
 
 permissions:
   contents: write
 
-concurrency:                     # one job at a time may change the repo or the media branch
-  group: repo-writes
+concurrency:                     # never run two publishers at once
+  group: instagram-publish
   cancel-in-progress: false
 
 jobs:

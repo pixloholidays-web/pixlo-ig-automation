@@ -199,7 +199,5 @@ reel:
     start: 0.0
     mood: adventure
     instruments: sampled
-  scheduled_at: '2026-10-16T19:30:00+05:30'
+  scheduled_at: '2026-10-21T19:30:00+05:30'
   status: scheduled
-  attempts: 1
-  last_error: 'OAuthException 200: API access blocked.'

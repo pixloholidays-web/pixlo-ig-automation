@@ -128,6 +128,8 @@ quality:
     - like if
     - comment yes
     - follow for more
+    - send this to
+    - share this with
 
 hosting:
   provider: github_raw               # github_raw (public repo only) | s3

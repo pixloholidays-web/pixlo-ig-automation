@@ -51,7 +51,8 @@ CAPTION RULES
 - Then 3-6 short lines adding value beyond the slides (one extra tip, best time, budget note).
 - Include any time-sensitive caveat from the research.
 - End with this line on its own: Planning this trip? DM us "TRIP"
-- Up to 4 emojis. No hashtags in the caption. No engagement bait ("tag a friend", "share if", "comment yes").
+- Up to 4 emojis. No hashtags in the caption. No engagement bait: never ask people to send, share, tag,
+  like or comment ("send this to your crew", "tag a friend", "share if", "comment yes"), on slides or in the caption.
 - hashtags: exactly {max_hashtags}, without "#": destination, specific topic, broad Indian travel, niche. No generic tags like "travel" or "instagood".
 - alt_text: one plain sentence describing the cover photo for screen readers."""
 

@@ -15,8 +15,8 @@ on:
 permissions:
   contents: write
 
-concurrency:                     # one job at a time may change the repo or the media branch
-  group: repo-writes
+concurrency:                     # one generator at a time (media-branch updates are safe alongside publishing)
+  group: generate-posts
   cancel-in-progress: false
 
 jobs:

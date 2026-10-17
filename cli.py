@@ -58,7 +58,13 @@ def upcoming_slots(cfg, days: int) -> list[datetime]:
 def cmd_plan(args, cfg):
     if _paused(cfg):
         return 0
-    taken = {posts.scheduled_at(p) for _, p in posts.load_all() if p.get("status") != "failed"}
+    taken = set()  # a slot is taken by a carousel or a Reel that will still go out
+    for _, p in posts.load_all():
+        if p.get("status") not in ("failed", "skip"):
+            taken.add(posts.scheduled_at(p))
+        r = p.get("reel") or {}
+        if r.get("scheduled_at") and r.get("status") not in ("failed", "skip"):
+            taken.add(posts.scheduled_at(r))
     created, failed = 0, 0
     for when in upcoming_slots(cfg, args.days):
         if when in taken:
@@ -148,6 +154,9 @@ def _create_container(client, cfg, post, kind) -> str:
     return client.create_carousel_container(children, caption)
 
 
+ACCOUNT_BLOCKED = "API access blocked"  # Meta error for a restricted app or developer account
+
+
 def _due(now) -> list[tuple]:
     """(path, post, kind) for every carousel and reel whose time has come."""
     items = []
@@ -208,6 +217,13 @@ def cmd_publish(args, cfg):
             state.pop("last_error", None)
             print(f"✓ {label} -> {state['permalink']}")
         except (GraphError, RuntimeError, OSError) as exc:
+            if ACCOUNT_BLOCKED in str(exc):
+                # Meta has blocked the whole app or developer account; every post would fail the same way
+                state["last_error"] = str(exc)
+                posts.save(path, post)
+                print(f"✗ {label}: {exc}\n  Meta is blocking all API calls for this app. Nothing was counted as an "
+                      "attempt. Check developers.facebook.com for a verification request, then re-run.")
+                return 1
             state["attempts"] = state.get("attempts", 0) + 1
             state["last_error"] = str(exc)
             if "ERROR" in str(exc) or "EXPIRED" in str(exc):
