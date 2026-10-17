@@ -47,7 +47,8 @@ GitHub often starts scheduled runs late, so a 19:30 post may go out some time af
 ### Reels
 Every post becomes a ~20 s Reel (1080×1920), published at its schedule slot. The slides Claude writes are the Reel's script: one shot per slide.
 - **2.5D parallax:** Depth Anything V2 (ONNX, CPU) splits each photo into depth layers and a virtual camera pushes in, pans or rises, so stills feel like drone or dolly shots. Free, no GPU, about 3 minutes per Reel.
-- **Text:** short animated text per shot (`reel_text`), the hook fully visible on frame 1, a save/follow end card.
+- **Text:** big bold words that pop in one by one, with numbers and prices in the accent colour and a label pill ("DAY 2", "3") on itinerary and list shots. The hook is fully visible on frame 1. A thin progress bar fills across the top, and the Reel ends on a save/follow card.
+- **Photos:** for every search the top results are scored for colour, contrast and exposure (plus Unsplash likes), and the most eye-catching one is used. Grey, dull or dark photos are skipped.
 - **Colour grade:** every photo gets the same look (a little more contrast and colour, warm highlights, cool shadows, soft vignette), so shots from different photographers feel like one film.
 - **Place name behind the subject:** on the cover, the destination appears in huge letters behind the mountains, temple or trees. It is only used when the photo suits it and every letter stays readable; otherwise the cover uses the normal text card. The cutout uses the depth map for skies and U²-Net (the model behind `rembg`) for other subjects.
 - **Route map:** right after the hook, an animated map draws the route from the starting city to the destination. Map shapes are from Natural Earth (public domain). No country or state borders are drawn, because border depictions are legally sensitive in India.

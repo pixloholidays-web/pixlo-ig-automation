@@ -28,7 +28,9 @@ CAROUSEL RULES
   Only when the post has no natural sequence: the slide right after the cover pays off the cover's promise.
 - CTA slide: title like "Save this for your trip"; body: one line on why to follow {handle}.
 - No emojis or hashtags on slides; they can't be rendered.
-- photo: index of the photo for that slide. Use the most striking photo on the cover. Match each info
+- photo: index of the photo for that slide. The cover decides whether anyone watches: use the most
+  striking, colourful, high-contrast photo there (the eye-catch score helps, but trust your eyes), ideally one
+  with a clear subject, depth or a person for scale. Match each info
   slide to a photo that actually shows what the slide talks about where possible; don't reuse a photo
   unless there are fewer photos than slides.
 - Never put a named landmark ("Chehni Kothi", "Serolsar Lake") over a photo of a different place that
@@ -40,6 +42,8 @@ CAROUSEL RULES
 
 REEL RULES (the same slides also become a ~20 s Reel, about 2.3 s per shot, mostly watched muted)
 - reel_text: the on-screen line for that shot, at most 7 words, readable in 2 seconds, standalone.
+  Make it punchy: lead with the surprising number or the payoff ("₹30 bus, 9 km uphill", not "There is a
+  bus that goes uphill"). Numbers and prices are shown in the accent colour automatically.
   In an itinerary or numbered list, start it with the same label as the slide ("Day 2: ...", "3. ...") so a
   viewer always knows where they are in the sequence.
   Cover: the hook itself (can equal the title if it's short). Info: the single most striking fact
@@ -92,6 +96,7 @@ def _system(cfg: dict) -> str:
 
 def write_carousel(cfg: dict, research: dict, photos: list[dict], feedback: str | None = None) -> dict:
     photo_list = "\n".join(f"Photo {i}: {p['path'].relative_to(ROOT).as_posix()} ({p['description']})"
+                           + (f", eye-catch score {p['score']:.0f}/100" if p.get("score") is not None else "")
                            for i, p in enumerate(photos))
     prompt = (
         "First, open every photo below with the Read tool and look at it. The slide text must match what is\n"

@@ -1,7 +1,14 @@
-"""Photo sourcing: your own photos first, then Unsplash, then Pexels. A photo is never reused."""
+"""Photo sourcing: your own photos first, then Unsplash, then Pexels. A photo is never reused.
+
+For each search, the top results are scored for how eye-catching they are (colour, contrast, exposure and,
+on Unsplash, how many people liked the photo) and the best one is used. Grey, dull or dark photos are skipped.
+"""
+import math
 import re
+from io import BytesIO
 from pathlib import Path
 
+import numpy as np
 import requests
 
 from .config import ROOT, env
@@ -35,6 +42,8 @@ def _unsplash(query: str, min_width: int) -> list[dict]:
         "id": f"unsplash:{p['id']}",
         "url": p["urls"]["raw"] + "&w=2160&q=85&fm=jpg&fit=max",
         "download_location": p["links"]["download_location"],
+        "thumb": p["urls"]["small"],
+        "likes": p.get("likes") or 0,
         "description": p.get("alt_description") or p.get("description") or query,
         "credit": {"name": p["user"]["name"], "source": "Unsplash",
                    "link": p["user"]["links"]["html"] + "?utm_source=pixlo&utm_medium=referral"},
@@ -51,12 +60,52 @@ def _pexels(query: str, min_width: int) -> list[dict]:
     return [{
         "id": f"pexels:{p['id']}",
         "url": p["src"]["original"] + "?auto=compress&w=2160",
+        "thumb": p["src"]["medium"],
         "description": p.get("alt") or query,
         "credit": {"name": p["photographer"], "source": "Pexels", "link": p["photographer_url"]},
     } for p in resp.json()["photos"] if p["width"] >= min_width]
 
 
 PROVIDERS = {"unsplash": _unsplash, "pexels": _pexels}
+CANDIDATES = 6  # results per search that get scored
+
+
+def eye_catch(img) -> float:
+    """0-100: how much a photo pops in a feed. Colourfulness (Hasler & Suesstrunk) and contrast count most;
+    grey, dark, washed-out or blown-out photos score low."""
+    from PIL import Image
+    if not isinstance(img, Image.Image):
+        img = Image.open(img)
+    x = np.asarray(img.convert("RGB").resize((256, 256)), np.float32)
+    r, g, b = x[..., 0], x[..., 1], x[..., 2]
+    rg, yb = r - g, 0.5 * (r + g) - b
+    colourful = math.hypot(rg.std(), yb.std()) + 0.3 * math.hypot(rg.mean(), yb.mean())
+    lum = 0.299 * r + 0.587 * g + 0.114 * b
+    contrast = float(lum.std())
+    exposure = 1 - min(1.0, abs(float(lum.mean()) - 125) / 125)       # mid-tones are best
+    clipped = float(((lum < 8) | (lum > 248)).mean())
+    score = 0.65 * min(colourful, 80) + 0.4 * min(contrast, 80) + 15 * exposure - 60 * clipped
+    return round(max(0.0, min(100.0, score)), 1)
+
+
+def _dull(score: float) -> bool:
+    return score < 25
+
+
+def _best(hits: list[dict]) -> dict | None:
+    """The most eye-catching of the first few hits (Unsplash likes give a small bonus)."""
+    from PIL import Image
+    scored = []
+    for h in hits[:CANDIDATES]:
+        try:
+            resp = requests.get(h["thumb"], timeout=30)
+            resp.raise_for_status()
+            h["score"] = eye_catch(Image.open(BytesIO(resp.content)))
+        except Exception:
+            continue
+        if not _dull(h["score"]):
+            scored.append((h["score"] + 6 * math.log10(1 + h.get("likes", 0)), h))
+    return max(scored, key=lambda s: s[0])[1] if scored else None
 
 
 def _download(photo: dict, dest_dir: Path) -> Path:
@@ -77,6 +126,8 @@ def find_photos(cfg: dict, destination: str, queries: list[str], count: int, use
                 cache_dir: Path) -> list[dict]:
     """Return up to `count` photos as {id, path, credit, description}, one per query where possible."""
     chosen = _own_photos(cfg, destination, used)[:count]
+    for p in chosen:
+        p["score"] = eye_catch(p["path"])
     taken = used | {p["id"] for p in chosen}
     min_width = cfg["stock"]["min_width"]
 
@@ -85,8 +136,8 @@ def find_photos(cfg: dict, destination: str, queries: list[str], count: int, use
             break
         for provider in cfg["stock"]["providers"]:
             hits = [h for h in PROVIDERS[provider](query, min_width) if h["id"] not in taken]
-            if hits:
-                photo = hits[0]
+            photo = _best(hits)
+            if photo:
                 photo["path"] = _download(photo, cache_dir)
                 photo["query"] = query
                 chosen.append(photo)
@@ -98,9 +149,12 @@ def find_photos(cfg: dict, destination: str, queries: list[str], count: int, use
         if len(chosen) >= count:
             break
         for provider in cfg["stock"]["providers"]:
-            for photo in [h for h in PROVIDERS[provider](query, min_width) if h["id"] not in taken]:
-                if len(chosen) >= count:
+            hits = [h for h in PROVIDERS[provider](query, min_width) if h["id"] not in taken]
+            while hits and len(chosen) < count:
+                photo = _best(hits)
+                if not photo:
                     break
+                hits = [h for h in hits if h["id"] != photo["id"]]
                 photo["path"] = _download(photo, cache_dir)
                 photo["query"] = query
                 chosen.append(photo)

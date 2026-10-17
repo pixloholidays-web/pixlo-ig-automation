@@ -78,9 +78,9 @@ def grade(rgb: np.ndarray) -> np.ndarray:
     """One look for every shot, so photos from different photographers feel like one film:
     a little more contrast and colour, warm highlights, cool shadows and a soft vignette."""
     x = rgb.astype(np.float32) / 255
-    x = (x - 0.5) * 1.08 + 0.5
+    x = (x - 0.5) * 1.12 + 0.5
     lum = (x @ np.array([0.299, 0.587, 0.114], np.float32))[..., None]
-    x = lum + (x - lum) * 1.14
+    x = lum + (x - lum) * 1.24
     lum = np.clip(lum, 0, 1)
     x += (1 - lum) ** 2 * np.array([-0.012, 0.004, 0.020], np.float32)   # shadows towards teal
     x += lum ** 2 * np.array([0.020, 0.008, -0.015], np.float32)         # highlights towards warm
@@ -92,44 +92,6 @@ def grade(rgb: np.ndarray) -> np.ndarray:
 
 
 # ------------------------------------------------------------------ text cards
-def _box(lines_spec, width: int, pad=(44, 34), bar=True, accent=(255, 183, 3)) -> Image.Image:
-    """Rounded dark card holding lines: [(lines, font, colour, gap_after)]."""
-    height = pad[1] * 2 + (28 if bar else 0) + sum(_line_h(f) * len(ls) + gap for ls, f, _, gap in lines_spec)
-    card = Image.new("RGBA", (width, height), (0, 0, 0, 0))
-    d = ImageDraw.Draw(card)
-    d.rounded_rectangle((0, 0, width - 1, height - 1), radius=36, fill=(8, 14, 20, 175))
-    y = pad[1]
-    if bar:
-        d.rectangle((pad[0], y, pad[0] + 90, y + 9), fill=accent)
-        y += 28
-    for ls, f, colour, gap in lines_spec:
-        for line in ls:
-            d.text((pad[0] + 2, y + 3), line, font=f, fill=(0, 0, 0, 140))
-            d.text((pad[0], y), line, font=f, fill=colour)
-            y += _line_h(f)
-        y += gap
-    return card
-
-
-def _text_card(cfg: dict, slide: dict, compact: bool = False) -> tuple[Image.Image, int, int]:
-    brand, colors = cfg["brand"], cfg["brand"]["colors"]
-    accent, white = _rgb(colors["accent"]), _rgb(colors["text"])
-    draw = ImageDraw.Draw(Image.new("RGB", (10, 10)))
-    max_w = W - 2 * MARGIN_X - 88
-    text = slide.get("reel_text") or slide["title"]
-    if slide["kind"] == "cover":
-        # compact: the hook sits in the lower third, leaving the top for the big place name
-        f_t, t_lines = _fit(draw, text, brand["font_black"], max_w, 4, 80 if compact else 100, 56)
-        spec = [(t_lines, f_t, white, 0)]
-        card = _box(spec, W - 2 * MARGIN_X, accent=accent)
-        y = SAFE_BOTTOM - 40 - card.height if compact else max(SAFE_TOP + 40, 760 - card.height // 2)
-        return card, MARGIN_X, y
-    f_t, t_lines = _fit(draw, text, brand["font_bold"], max_w, 3, 78, 52)
-    card = _box([(t_lines, f_t, white, 0)], W - 2 * MARGIN_X, accent=accent)
-    y = SAFE_TOP + 60 if slide.get("text_position") == "top" else SAFE_BOTTOM - card.height
-    return card, MARGIN_X, y
-
-
 def headline(destination: str | None) -> str | None:
     """The place name for the big title behind the subject: short enough to read at a glance."""
     name = (destination or "").split(" and ")[0].strip().upper()
@@ -254,8 +216,13 @@ class Shot:
         if slide["kind"] == "cover" and place and rc.get("title_behind_subject", True):
             self._try_title_behind(cfg, img, raw, place)
         if self.title is None:
-            card, self.cx, self.cy = _text_card(cfg, slide)
-            self.card = np.asarray(card)
+            self.caption = self._caption(cfg)
+
+    def _caption(self, cfg: dict, top: int | None = None):
+        from .captions import Caption
+        text = self.slide.get("reel_text") or self.slide["title"]
+        return Caption(cfg, text, self.slide["kind"], self.slide.get("text_position", "bottom"), top,
+                       safe=(SAFE_TOP, SAFE_BOTTOM))
 
     def _try_title_behind(self, cfg: dict, img: Image.Image, raw_depth: np.ndarray, place: str) -> None:
         from . import cutout
@@ -269,11 +236,11 @@ class Shot:
         z = (self.move["z"][0] + self.move["z"][1]) / 2
         u, v = np.meshgrid(np.arange(W, dtype=np.float32) - W / 2, np.arange(H, dtype=np.float32) - H / 2)
         seen = cv2.remap(self.fg, sw / 2 + u / z, sh / 2 + v / z, cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT)
-        card, cx, cy = _text_card(cfg, self.slide, compact=True)  # the hook, in the lower third
-        y = _place_title(alpha, rows, seen, cy)
+        hook = self._caption(cfg, top=SAFE_BOTTOM - 400)  # the hook, in the lower third
+        y = _place_title(alpha, rows, seen, hook.top)
         if y is not None:
             self.title = (layer, y)
-            self.card, self.cx, self.cy = np.asarray(card), cx, cy
+            self.caption = hook
 
     def frames(self, u: np.ndarray, v: np.ndarray):
         sh, sw = self.src.shape[:2]
@@ -301,9 +268,10 @@ class Shot:
                 region = frame[y0:y1].astype(np.float32)
                 a = layer[..., 3:4] * (1 - fg)
                 frame[y0:y1] = (region * (1 - a) + layer[..., :3] * a).astype(np.uint8)
-            # Text slides up and fades in over the first 0.35 s; the hook is fully visible from frame 0
-            a = 1.0 if self.slide["kind"] == "cover" else _ease(min(1.0, i / (0.35 * FPS)))
-            _blend(frame, self.card, self.cx, self.cy + round(36 * (1 - a)), a)
+            if self.slide["kind"] == "cta":
+                _blend(frame, self.card, self.cx, self.cy, 1.0)
+            else:
+                self.caption.draw(frame, i)  # words pop in one by one; the hook is readable from frame 0
             yield frame
 
 
@@ -443,6 +411,16 @@ def build(cfg: dict, post: dict, mode: str = "auto") -> dict:
 
     u, v = np.meshgrid(np.arange(W, dtype=np.float32) - W / 2, np.arange(H, dtype=np.float32) - H / 2)
     prev_tail: list[np.ndarray] = []
+    written = 0
+    accent = np.array(_rgb(cfg["brand"]["colors"]["accent"]), np.uint8)
+
+    def progress(frame: np.ndarray) -> np.ndarray:
+        """A thin bar that fills across the Reel: viewers see how much is left, which keeps them watching."""
+        if rc.get("progress_bar", True):
+            y0 = SAFE_TOP - 34
+            frame[y0:y0 + 8, 40:W - 40] = (frame[y0:y0 + 8, 40:W - 40] * 0.45).astype(np.uint8)
+            frame[y0:y0 + 8, 40:40 + round((W - 80) * written / max(1, total_frames - 1))] = accent
+        return frame
     try:
         for si, shot in enumerate(shots):
             last = si == len(shots) - 1
@@ -456,7 +434,8 @@ def build(cfg: dict, post: dict, mode: str = "auto") -> dict:
                 if not last and i >= shot.n - TRANS:
                     tail.append(frame)
                     continue
-                proc.stdin.write(frame.tobytes())
+                proc.stdin.write(progress(frame).tobytes())
+                written += 1
             prev_tail = tail
         proc.stdin.close()
         if proc.wait() != 0:

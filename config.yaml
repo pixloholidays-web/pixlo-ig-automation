@@ -110,6 +110,7 @@ reels:
   grade: true                        # one colour look across all shots
   title_behind_subject: true         # cover: place name in huge letters behind the mountains/subject, when the photo suits it
   route_map: true                    # animated map shot from the starting city to the destination
+  progress_bar: true                 # thin bar filling across the top, so viewers see how much is left
 
 stock:
   own_photos_dir: media/own          # media/own/<destination-slug>/*.jpg are used before any stock photo
