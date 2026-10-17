@@ -20,7 +20,9 @@ Return your result in the required JSON format:
 - topic: the specific post topic, in English
 - hook_idea: the curiosity or benefit angle that makes people stop and send it
 - facts: 8-15 facts, each a claim with the source_url it came from
-- photo_queries: 8-10 stock photo searches, each a concrete visual scene at this destination
+- photo_queries: 8-10 stock photo searches, each a concrete visual scene at this destination, in the
+  season the post is about (add "autumn", "snow", "monsoon" or the like when it matters, so summer-green
+  photos don't end up on an autumn post), and covering every named place the post will mention
   (e.g. "Key Monastery Spiti snow", "Chandratal lake blue", not "travel")
 - time_sensitive: caveats to mention, or ""
 - route: for the animated map. from_name: the Indian city most of this audience would start this trip from

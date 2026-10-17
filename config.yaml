@@ -119,6 +119,7 @@ stock:
 
 quality:
   min_hook_score: 8                  # 1-10, judged by the editor pass; the cover decides reach
+  fallback_hook_score: 7             # if no draft reaches 8, the best draft at 7+ with no other problems still goes out
   max_rewrites: 3
   polish: true                       # after a pass, one more rewrite for the editor's remaining notes (kept only if it still passes)
   topic_memory: 30                   # don't repeat a topic/photo seen in the last N posts

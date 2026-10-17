@@ -120,6 +120,8 @@ def review(cfg: dict, research: dict, copy: dict, photo_count: int, offline: boo
         if ai["engagement_bait"]:
             problems.append("remove engagement bait")
         problems += [f"wrong photo for a named place, pick another or reword: {m}" for m in ai["photo_mismatch"]]
+        # Everything except the hook score: these must be zero for a draft to go out at all
+        report["hard_problems"] = [p for p in problems if not p.startswith("hook scored")]
         # Minor issues are passed along on rewrites but don't fail a post by themselves
         report["issues"] = ai["issues"][:5]
     feedback = "\n".join(f"- {p}" for p in problems + report.get("issues", []))

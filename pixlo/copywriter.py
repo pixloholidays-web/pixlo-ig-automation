@@ -19,6 +19,8 @@ CAROUSEL RULES
 - Info slides: ONE idea per slide. title at most 6 words; body at most 25 words and at most 3 numbers,
   with concrete details (names, ₹ ranges, timings, distances). No fluff adjectives. Extra numbers go in the caption.
 - Every claim on slides and in the caption must come from the research facts or time-sensitive notes.
+  That includes vague claims about other people ("most people miss it", "nobody knows"): leave them out
+  unless a fact backs them.
   Do not add facts of your own, and don't promise what the facts can't back (e.g. "exact timings" from old sources).
 - ORDER: when the post is a sequence (a day-by-day or hour-by-hour itinerary, steps, a route, a numbered
   list), the slides MUST follow that sequence from start to finish: Night 0, Day 1, Day 2, Day 3. Never

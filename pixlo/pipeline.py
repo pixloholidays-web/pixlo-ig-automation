@@ -38,7 +38,8 @@ def make_carousel(cfg: dict, when: datetime, offline: bool = False, pillar_name:
 
     # 3. Copy + quality gates, with rewrites
     writer = copywriter.offline_carousel if offline else copywriter.write_carousel
-    feedback, report = None, {}
+    feedback, report, fallback = None, {}, None
+    floor = cfg["quality"].get("fallback_hook_score", cfg["quality"]["min_hook_score"])
     for attempt in range(cfg["quality"]["max_rewrites"] + 1):
         copy = writer(cfg, facts, photos, feedback)
         passed, feedback, report = quality.review(cfg, facts, copy, len(photos), offline)
@@ -46,8 +47,16 @@ def make_carousel(cfg: dict, when: datetime, offline: bool = False, pillar_name:
               f"{'PASS' if passed else 'rewrite'}")
         if passed:
             break
+        # Clean apart from a slightly weaker hook: keep the best such draft in case none reaches the target
+        if (not report.get("rule_problems") and report.get("hard_problems") == []
+                and report.get("hook_score", 0) >= floor
+                and (fallback is None or report["hook_score"] > fallback[1]["hook_score"])):
+            fallback = (copy, report)
     else:
-        raise QualityError(f"failed quality gates after {attempt + 1} drafts:\n{feedback}")
+        if not fallback:
+            raise QualityError(f"failed quality gates after {attempt + 1} drafts:\n{feedback}")
+        copy, report = fallback
+        print(f"    using the best clean draft (hook {report['hook_score']}/10)")
 
     # Polish: one more rewrite for the editor's remaining notes, kept only if it still passes
     if not offline and cfg["quality"].get("polish") and report.get("issues"):
