@@ -1,0 +1,198 @@
+id: 2026-11-04-1930-manali
+type: carousel
+pillar: this-vs-that
+destination: Manali
+topic: 'Manali vs Kasol in November 2026 from Delhi: an honest comparison of budget, crowds, snow chances and vibe, and which one suits you (first-timers, couples and families vs backpackers and slow travellers)'
+scheduled_at: '2026-11-04T19:30:00+05:30'
+status: skip
+style: classic
+images:
+- media/posts/2026-11-04-1930-manali/01.jpg
+- media/posts/2026-11-04-1930-manali/02.jpg
+- media/posts/2026-11-04-1930-manali/03.jpg
+- media/posts/2026-11-04-1930-manali/04.jpg
+- media/posts/2026-11-04-1930-manali/05.jpg
+- media/posts/2026-11-04-1930-manali/06.jpg
+- media/posts/2026-11-04-1930-manali/07.jpg
+- media/posts/2026-11-04-1930-manali/08.jpg
+- media/posts/2026-11-04-1930-manali/09.jpg
+slides:
+- kind: cover
+  photo: 6
+  title: Same Delhi bus, two trips. One costs ₹5,000.
+  body: Manali vs Kasol in November, with real numbers
+  text_position: top
+  photo_shows: green steel bridge, hotels, snowy peaks, clear blue sky
+  reel_text: Same bus. One trip costs ₹5,000.
+- kind: info
+  photo: 8
+  title: 'Kasol: 3 days for ₹5,000'
+  body: Get off the Manali bus at Bhuntar, then a ₹50–60 local bus. Dorms ₹350–500 a night, dhaba meals ₹80–140.
+  text_position: bottom
+  photo_shows: mountain river over boulders, pine slopes, pink evening sky
+  reel_text: 'Kasol: 3 days for ₹5,000'
+- kind: info
+  photo: 3
+  title: Kasol's best extras are free
+  body: ₹15 bus to Manikaran for the free hot springs and gurdwara langar. ₹45 to Barshaini, then a free 3 km walk to Tosh.
+  text_position: bottom
+  photo_shows: stream through autumn forest, misty peaks
+  reel_text: ₹15 bus to a free langar
+- kind: info
+  photo: 5
+  title: 'Manali: pricier beds, more comfort'
+  body: Himsuta Volvo from Delhi ₹1,448–1,569 one way. Old Manali dorms ₹500–1,200 a night, private rooms ₹1,800–4,000.
+  text_position: top
+  photo_shows: wide valley, snow-dusted ridges, blue sky
+  reel_text: 'Manali dorms: ₹500–1,200 a night'
+- kind: info
+  photo: 2
+  title: 'Crowds: Mall Road vs river walks'
+  body: Manali is bigger and busier. Old Manali and Vashisht are calmer than Mall Road. Kasol is quieter, but still crowded on weekends.
+  text_position: top
+  photo_shows: busy street, neon café signs, shawl stalls, crowd
+  reel_text: Kasol is quieter, except weekends
+- kind: info
+  photo: 0
+  title: Snow? Late November, Solang or Sissu
+  body: Sissu is 38–40 km from Manali through the Atal Tunnel. On the Kasol side, Tosh and Kheerganga may get their first snow.
+  text_position: top
+  photo_shows: snow-covered valley, tiny walkers, big blue sky
+  reel_text: Snow? Late November, Solang or Sissu
+- kind: info
+  photo: 4
+  title: Check these before you go
+  body: Atal Tunnel status and e-Aagman permit that morning. Kheerganga camps still open. Skip Rohtang, usually shut. November 2025 was 92% below-normal.
+  text_position: bottom
+  photo_shows: snowy peak lit through clouds, dark forest below
+  reel_text: 'Nov 2025: 92% below-normal snow'
+- kind: info
+  photo: 7
+  title: Pick by who's coming
+  body: 'Manali: families, first-timers and couples who want comfort. Kasol: friends, backpackers and couples who want an unplanned trip.'
+  text_position: top
+  photo_shows: hikers walking down a snowy ridge, clouds
+  reel_text: 'Families: Manali. Backpackers: Kasol.'
+- kind: cta
+  photo: 1
+  title: Save this before you book
+  body: Tunnel, permit and camp checks in one place. Follow @pixloholidays for real budgets and exact routes.
+  text_position: bottom
+  photo_shows: glowing orange tunnel in snowy hillside at dusk
+  reel_text: Save this for your November trip
+caption: |-
+  Manali vs Kasol in November 2026 from Delhi: budget, crowds, snow chances and vibe compared 🏔️
+  Can't decide? Manali to Kasol is about 75–80 km, 2.5–3.5 hours by road, so you can do both.
+  November days are about 10–15°C and nights drop to 0–5°C. Pack proper layers 🧥
+  Manali hotel rates in November are noticeably lower than in December, and the Vashisht hot spring dip is free.
+  Sissu taxi from Manali: about ₹2,500–3,000 for a small car, ₹3,500–4,000+ for an SUV. One traveller was quoted about ₹7,000 in November 2025.
+  Snow isn't guaranteed. No stopping in avalanche zones near the Atal Tunnel's North Portal. Bhuntar flights often get cancelled in winter fog. Prices come from 2026 blogs, so check live rates before you book ❄️
+  Planning this trip? DM us "TRIP"
+hashtags:
+- manali
+- kasol
+- manalivskasol
+- himachaltourism
+- budgettravelindia
+alt_text: A green steel bridge in front of a hotel with a teal roof, with snow-covered mountains under a clear blue sky behind.
+music_mood: adventure
+route:
+  from:
+    name: Delhi
+    lat: 28.6139
+    lon: 77.209
+  to:
+    name: Manali
+    lat: 32.2432
+    lon: 77.1892
+  note: About 540 km, 12-14 hrs
+photos:
+- id: unsplash:CF6V_5Vuo-Y
+  file: media/cache/unsplash_CF6V_5Vuo-Y.jpg
+  credit:
+    name: Harshi Baid
+    source: Unsplash
+    link: https://unsplash.com/@harshi_baid?utm_source=pixlo&utm_medium=referral
+- id: unsplash:HkGUSayvq5U
+  file: media/cache/unsplash_HkGUSayvq5U.jpg
+  credit:
+    name: Casey Horner
+    source: Unsplash
+    link: https://unsplash.com/@mischievous_penguins?utm_source=pixlo&utm_medium=referral
+- id: unsplash:RVUQY5R_er4
+  file: media/cache/unsplash_RVUQY5R_er4.jpg
+  credit:
+    name: Aman Sharma
+    source: Unsplash
+    link: https://unsplash.com/@amigos_shine0?utm_source=pixlo&utm_medium=referral
+- id: unsplash:KkHt_ZX5mT0
+  file: media/cache/unsplash_KkHt_ZX5mT0.jpg
+  credit:
+    name: Nicola Fittipaldi
+    source: Unsplash
+    link: https://unsplash.com/@nicolafittipaldi?utm_source=pixlo&utm_medium=referral
+- id: unsplash:Cy0t_-0RYEw
+  file: media/cache/unsplash_Cy0t_-0RYEw.jpg
+  credit:
+    name: Arsh.D.sonda
+    source: Unsplash
+    link: https://unsplash.com/@arshxdxsonda?utm_source=pixlo&utm_medium=referral
+- id: unsplash:O6mmstzau7s
+  file: media/cache/unsplash_O6mmstzau7s.jpg
+  credit:
+    name: Yoav Aziz
+    source: Unsplash
+    link: https://unsplash.com/@yoavaziz?utm_source=pixlo&utm_medium=referral
+- id: unsplash:7h7NCXp9eZ0
+  file: media/cache/unsplash_7h7NCXp9eZ0.jpg
+  credit:
+    name: Abhishek Donda
+    source: Unsplash
+    link: https://unsplash.com/@abhishek_donda?utm_source=pixlo&utm_medium=referral
+- id: unsplash:HnlNbNsiJz0
+  file: media/cache/unsplash_HnlNbNsiJz0.jpg
+  credit:
+    name: TEJASHVI VERMA
+    source: Unsplash
+    link: https://unsplash.com/@tejashvi?utm_source=pixlo&utm_medium=referral
+- id: unsplash:jjBn5LC4Tng
+  file: media/cache/unsplash_jjBn5LC4Tng.jpg
+  credit:
+    name: swarnika arey
+    source: Unsplash
+    link: https://unsplash.com/@sarey30?utm_source=pixlo&utm_medium=referral
+sources:
+- https://refuje.com/blog/delhi-to-manali-bus-guide-2026
+- https://thelandofwanderlust.com/parvati-valley-in-november-2024-super-tips/
+- https://travelcoffee.in/blog/manali-in-november
+- https://travelcoffee.in/blog/manali-vs-kasol
+- https://travelcoffee.in/blog/sissu-in-november
+- https://traveltriangle.com/blog/kheerganga-trek/
+- https://trekgo.in/blog/best-hostels-in-old-manali
+- https://trekgo.in/blog/how-to-travel-kasol-under-5000
+review:
+  hook_score: 8
+  issues:
+  - 'Slide 7: ''November 2025 was 92% below-normal'' is unclear and awkward. Rewrite as ''November 2025 had 92% less rain and snow than normal, so snow isn''t guaranteed.'''
+  - 'Slide 9: ''exact routes'' overstates prices that come from 2026 blogs and change often. Change to ''real budgets and tested routes''.'
+generated_by: opus
+reel:
+  video: media/posts/2026-11-04-1930-manali/reel.mp4
+  cover: media/posts/2026-11-04-1930-manali/reel_cover.jpg
+  mode: auto
+  duration: 21.9
+  title_behind_subject: false
+  route_map: true
+  music:
+    id: original:166043962
+    file: media/cache/music/original_2026-11-04-1930-manali.wav
+    title: Pixlo Original - Manali
+    artist: Pixlo
+    source: original
+    license: own
+    bpm: 102.0
+    start: 0.0
+    mood: adventure
+    instruments: sampled
+  scheduled_at: '2026-11-04T19:30:00+05:30'
+  status: scheduled
