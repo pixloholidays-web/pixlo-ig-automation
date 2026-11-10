@@ -1,0 +1,159 @@
+id: 2026-11-11-1930-darjeeling
+type: carousel
+pillar: hidden-gems
+destination: Darjeeling
+topic: 'Skip crowded Darjeeling town this November: 4 hamlets nearby with Kanchenjunga views and orange orchards. Chatakpur (7,887 ft, inside Senchal sanctuary), Lamahatta (₹15 eco park), Tinchuley with Gumbadara viewpoint, and Sittong in orange-harvest season. Village homestays cost about ₹500–1,700 per person a night, meals included.'
+scheduled_at: '2026-11-11T19:30:00+05:30'
+status: skip
+style: bold
+images:
+- media/posts/2026-11-11-1930-darjeeling/01.jpg
+- media/posts/2026-11-11-1930-darjeeling/02.jpg
+- media/posts/2026-11-11-1930-darjeeling/03.jpg
+- media/posts/2026-11-11-1930-darjeeling/04.jpg
+- media/posts/2026-11-11-1930-darjeeling/05.jpg
+- media/posts/2026-11-11-1930-darjeeling/06.jpg
+slides:
+- kind: cover
+  photo: 2
+  title: 'Skip Darjeeling town: 4 hamlets, one illegal without a permit'
+  body: Kanchenjunga views and orange orchards, 23–35 km out
+  text_position: top
+  photo_shows: prayer flags over an orange-walled shrine path, people walking
+  reel_text: 4 hamlets. One illegal without permit.
+- kind: info
+  photo: 1
+  title: '1. Chatakpur: permit first'
+  body: Forest village inside Senchal sanctuary. Most homestays see Kanchenjunga on clear days. Permit ₹120 per person plus ₹400 per vehicle; your homestay arranges it.
+  text_position: top
+  photo_shows: snow peaks above forested ridges, blue sky
+  reel_text: '1. Chatakpur: no permit, no entry'
+- kind: info
+  photo: 0
+  title: '2. Lamahatta: ₹15 eco park'
+  body: 23 km from Darjeeling. Buy the ticket at the counter across the road. A steep 750 m trail leads to a sacred lake; take a local guide.
+  text_position: top
+  photo_shows: prayer flags strung through pine forest, small waterfall
+  reel_text: '2. Lamahatta: ₹15 eco park'
+- kind: info
+  photo: 4
+  title: 3. Tinchuley and Gumbadara
+  body: 'Gumbadara Viewpoint is a 20-minute walk through fern forest. Abiraj Homestay: meals ₹500 per person, doubles from ₹800 (older listing).'
+  text_position: top
+  photo_shows: tea-covered slopes, lone trees, clear sky
+  reel_text: '3. Tinchuley: meals ₹500 a person'
+- kind: info
+  photo: 3
+  title: 4. Sittong in orange season
+  body: Orchards peak November to January. 35 km from Darjeeling. Orchard-view homestay about ₹1,350 with food. Skip Namthing Lake; it's dry now.
+  text_position: top
+  photo_shows: hill road through green forest under clouds
+  reel_text: '4. Sittong: oranges till January'
+- kind: cta
+  photo: 5
+  title: Save this for your trip
+  body: Follow @pixloholidays for hidden places, real budgets and day-by-day itineraries across India.
+  text_position: top
+  photo_shows: sunrise on snow peaks above a hillside town
+  reel_text: Save this for your trip
+caption: |-
+  Offbeat Darjeeling in November: 4 hamlets with Kanchenjunga views, orange orchards and homestays with meals 🏔️🍊
+  Chatakpur's last 14–15 km is rough and boulder-strewn, so book a high-clearance Sumo (about ₹3,200 from Darjeeling, a March 2022 fare). Homestays there run about ₹1,700 per person with all meals.
+  Lamahatta, Takdah and Gumbadara can all be done from one base. Some of Takdah's British-era buildings are now heritage homestays.
+  In Sittong, walk 150 m uphill to Ahaldara Viewpoint for a 360-degree view.
+  Tinchuley tip: the viewpoints are reliable, but not every homestay room faces Kanchenjunga. Ask before you book.
+  Getting there: a shared jeep from NJP to Darjeeling is about ₹200–300, more in peak periods.
+  Prices mix current listings and older guide pages, so confirm with your homestay. Mountain views need clear weather, and November nights are cold, so pack warm layers 🧥
+  Planning this trip? DM us "TRIP"
+hashtags:
+- darjeeling
+- sittongorange
+- incredibleindia
+- offbeatdarjeeling
+- indianhomestays
+alt_text: Rows of colourful prayer flags hang over an orange-walled shrine path under a blue sky, with a few people walking below.
+music_mood: calm
+route:
+  from:
+    name: Kolkata
+    lat: 22.5726
+    lon: 88.3639
+  to:
+    name: Darjeeling
+    lat: 27.041
+    lon: 88.2663
+  note: ''
+photos:
+- id: unsplash:NEWHFyewDaY
+  file: media/cache/unsplash_NEWHFyewDaY.jpg
+  credit:
+    name: Akshay Mehta
+    source: Unsplash
+    link: https://unsplash.com/@yayavarii?utm_source=pixlo&utm_medium=referral
+- id: unsplash:Z2KOivfLYxk
+  file: media/cache/unsplash_Z2KOivfLYxk.jpg
+  credit:
+    name: Senir khawas
+    source: Unsplash
+    link: https://unsplash.com/@senir?utm_source=pixlo&utm_medium=referral
+- id: unsplash:OUcKtVbZBVI
+  file: media/cache/unsplash_OUcKtVbZBVI.jpg
+  credit:
+    name: Claire Kelly
+    source: Unsplash
+    link: https://unsplash.com/@claire_k?utm_source=pixlo&utm_medium=referral
+- id: unsplash:n-oKJurg8LA
+  file: media/cache/unsplash_n-oKJurg8LA.jpg
+  credit:
+    name: Boudhayan Bardhan
+    source: Unsplash
+    link: https://unsplash.com/@yan_slg?utm_source=pixlo&utm_medium=referral
+- id: unsplash:cheu2vL3FBw
+  file: media/cache/unsplash_cheu2vL3FBw.jpg
+  credit:
+    name: Akash Dey
+    source: Unsplash
+    link: https://unsplash.com/@iamskydey?utm_source=pixlo&utm_medium=referral
+- id: unsplash:sZTWChxKlEo
+  file: media/cache/unsplash_sZTWChxKlEo.jpg
+  credit:
+    name: Ali Hasan  Bin Gursain
+    source: Unsplash
+    link: https://unsplash.com/@alihasan23?utm_source=pixlo&utm_medium=referral
+sources:
+- https://darjeeling-tourism.com/darj_0000ed.htm
+- https://www.darjeeling-tourism.com/darj_000120.htm
+- https://www.darjeeling-tourism.com/darj_000174.htm
+- https://www.darjeeling-tourism.com/darj_00021f.htm
+- https://www.darjeeling-tourism.com/darj_00024e.htm
+- https://www.nomadicweekends.com/?p=68200
+- https://www.outlooktraveller.com/amp/story/explore/hills/a-road-trip-through-three-lesser-known-himalayan-hamlets-near-darjeeling
+- https://www.thrillophilia.com/homestays-chatakpur
+review:
+  hook_score: 8
+  issues:
+  - Slide 5 (Sittong in orange season) uses a generic photo of a hill road through forest. Swap in a photo of an orange orchard so the slide shows its own selling point.
+  - 'Slide 2 (Chatakpur) leaves out the biggest planning risk. Add a short line such as ''Rough last 14–15 km: book a high-clearance Sumo'' so people save the slide for that tip.'
+  - Slide 4 (Tinchuley and Gumbadara) never says why the place is worth a visit. Add 'Kanchenjunga views on clear days' before the homestay price.
+  - On slide 2, change 'your homestay arranges it' to 'your homestay can arrange it, or get it at the Jorebungalow Forest Office'. Readers whose homestay doesn't arrange permits then still know where to get one.
+generated_by: opus
+reel:
+  video: media/posts/2026-11-11-1930-darjeeling/reel.mp4
+  cover: media/posts/2026-11-11-1930-darjeeling/reel_cover.jpg
+  mode: auto
+  duration: 15.4
+  title_behind_subject: false
+  route_map: true
+  music:
+    id: original:2304638624
+    file: media/cache/music/original_2026-11-11-1930-darjeeling.wav
+    title: Pixlo Original - Darjeeling
+    artist: Pixlo
+    source: original
+    license: own
+    bpm: 76.0
+    start: 0.0
+    mood: calm
+    instruments: sampled
+  scheduled_at: '2026-11-11T19:30:00+05:30'
+  status: scheduled
